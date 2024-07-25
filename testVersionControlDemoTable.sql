@@ -208,7 +208,7 @@ INSERT INTO Permissions(permissions,readWrite,isOwner) VALUES  (4, 'WRITE', 0);
 -- 3. Create initial branch
 -- 4. Create initial Folder
 -- 	4a. Create initial empty Blob
--- 5. Create initial Commit
+-- 5. Create initial Commit with Folder
 --
 
 
@@ -233,7 +233,6 @@ INSERT INTO Permissions(permissions,readWrite,isOwner) VALUES  (4, 'WRITE', 0);
 		(1, TO_DATE('2024/07/08 14:28:21', 'yyyy/mm/dd hh24:mi:ss'), 'Initial Commit', 1, 'main', 1);
 	INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (1, 1);
 --	
-
 
 
 -- CREATE DEMO REPO 2
@@ -280,40 +279,123 @@ INSERT INTO Permissions(permissions,readWrite,isOwner) VALUES  (4, 'WRITE', 0);
 -- 
 -- User Insert/Update File
 -- 1. Create new version of File
--- 	1a. Create new Blob if needed
--- 2. Create necessary new Folders
+-- 	1a. Create new Blob if needed, potentially require us to change sqlterminator
+-- 2. Create necessary new Folders, including updating numberOffiles attribute
 -- 3. Put all files and folders into new folder
 --		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
 --		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
 --			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
 -- 4. Create new Commit and attach Folder
 --
-
 
 -- INSERT DEMO FILE
 -- User Insert/Update File
 -- 1. Create new version of File
--- 	1a. Create new Blob if needed
+-- 	1a. Create new Blob if needed, potentially require us to change sqlterminator
 INSERT INTO Blob (hash, content)  VALUES ('DF3B852F0FD6EA481761D2DFD2CBE5479B49F7D48D863CB79D1B54C0C285EC5F',
-	'Enter some file lines here'
+	'#include <iostream>
+	const int n = 3
+	const int DSIZE = 10
+	const int block_size = 32'
 );
 INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
-	(6, '/hello.cpp', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'DF3B852F0FD6EA481761D2DFD2CBE5479B49F7D48D863CB79D1B54C0C285EC5F');
-
--- 2. Create necessary new Folders
+	(4, '/hello.cpp', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'DF3B852F0FD6EA481761D2DFD2CBE5479B49F7D48D863CB79D1B54C0C285EC5F');
+-- 2. Create necessary new Folders, including updating numberOffiles attribute
 INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
-		(4, '/', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
-INSERT INTO Folders(id, numberOfFiles) VALUES (4, 0);
-
+		(5, '/', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+INSERT INTO Folders(id, numberOfFiles) VALUES (5, 1);
 -- 3. Put all files and folders into new folder
 --		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
 --		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
 --			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
-INSERT INTO FilesInFolders(folderId, fileId) VALUES (4,6);
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (5,4);
 -- 4. Create new Commit and attach Folder
 INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
 	(4, TO_DATE('2024/07/11 16:42:00', 'yyyy/mm/dd hh24:mi:ss'), 'added file 1', 1, 'main', 1);
-INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (4,4);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (5,4);
 --
 
+
+-- UPDATE DEMO FILE
+-- User Insert/Update File
+-- 1. Create new version of File
+-- 	1a. Create new Blob if needed, note, potentially require us to change sqlterminator
+set sqlterminator "~"
+INSERT INTO Blob (hash, content)  VALUES ('DF3B852F0FD6EA481761D2DFD2CBE5479B49F8D87658B69D1B54C0C285EC5F',
+	'#include <iostream>
+	const int n = 3;
+	const int DSIZE = 10;
+	const int block_size = 32;'
+)~
+set sqlterminator ";"
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+	(6, '/hello.cpp', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'DF3B852F0FD6EA481761D2DFD2CBE5479B49F8D87658B69D1B54C0C285EC5F');
+-- 2. Create necessary new Folders, including updating numberOffiles attribute
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(7, '/', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+INSERT INTO Folders(id, numberOfFiles) VALUES (7, 1);
+-- 3. Put all files and folders into new folder
+--		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
+--		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
+--			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (7,6);
+-- 4. Create new Commit and attach Folder
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(5, TO_DATE('2024/07/11 17:01:00', 'yyyy/mm/dd hh24:mi:ss'), 'added semicolons in file', 1, 'main', 1);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (7,5);
+--
+
+-- INSERT DEMO FILE 2
+-- User Insert/Update File
+-- 1. Create new version of File, 
+-- 	1a. Create new Blob if needed, potentially require us to change sqlterminator
+INSERT INTO Blob (hash, content)  VALUES ('A8SNS9SA0FD6EA481761D2DFD2CBE5479B49F7D48D863CB79D1B54C0C285EC5F',
+	'test file, hello world!!'
+);
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+	(8, '/file2.txt', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'A8SNS9SA0FD6EA481761D2DFD2CBE5479B49F7D48D863CB79D1B54C0C285EC5F');
+-- 2. Create necessary new Folders, including updating numberOffiles attribute
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(9, '/', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+INSERT INTO Folders(id, numberOfFiles) VALUES (9, 2);
+-- 3. Put all files and folders into new folder
+--		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
+--		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
+--			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
+-- Ex: Below is old file hello.cpp
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (9,6); 
+-- Ex: Below is new file file2.txt
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (9,8); 
+-- 4. Create new Commit and attach Folder
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(6, TO_DATE('2024/07/11 17:34:00', 'yyyy/mm/dd hh24:mi:ss'), 'added file 2', 1, 'main', 1);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (9,6);
+--
+
+--
+-- User Delete File
+-- 1. Create necessary new Folders
+-- 2. Put all files and folders into new folder
+--		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
+--		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
+--			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
+-- 3. Create new Commit and attach Folder
+--
+
+-- DELETE DEMO FILE
+-- User Delete File
+-- 1. Create necessary new Folders, including reducing numberOffiles attribute
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(10, '/', TO_DATE('2024/07/11', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+-- Note: See we reduce numberOfFile
+INSERT INTO Folders(id, numberOfFiles) VALUES (10, 1);
+-- 2. Put all files and folders into new folder EXCEPT for file you are deleting
+--		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
+--		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
+--			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (10,6);
+-- 3. Create new Commit and attach Folder
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(7, TO_DATE('2024/07/11 18:09:00', 'yyyy/mm/dd hh24:mi:ss'), 'deleted file 2', 1, 'main', 1);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (10,7);
 
