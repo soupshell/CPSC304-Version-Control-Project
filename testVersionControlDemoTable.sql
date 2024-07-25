@@ -211,7 +211,6 @@ INSERT INTO Permissions(permissions,readWrite,isOwner) VALUES  (4, 'WRITE', 0);
 -- 5. Create initial Commit with Folder
 --
 
-
 -- CREATE DEMO REPO 1
 -- 1. Create Repo
 	INSERT INTO Repo(id,name,dateCreated) VALUES 
@@ -274,6 +273,27 @@ INSERT INTO Permissions(permissions,readWrite,isOwner) VALUES  (4, 'WRITE', 0);
 		(3, TO_DATE('2024/07/09 07:32:21', 'yyyy/mm/dd hh24:mi:ss'), 'Initial Commit', 3, 'main', 3);
 	INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (3, 3);
 --	
+
+-- User adds Contributors to Repo
+INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (2, 3, 4);
+INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (4, 3, 4);
+
+-- User Adds Issues to Repo
+INSERT INTO Issues(id,descriptions,dateResolved,repoID) VALUES 
+	(1, 'repo is empty', TO_DATE('2024/07/10', 'yyyy/mm/dd'), 3);
+
+-- User makes comments on Repo
+INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+	(1, 3, 1, 'Will be adding new file soon', TO_DATE('2024/07/10 14:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+	(2, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:04:13', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+	(3, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:04:53', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+	(4, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:05:21', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+	(5, 4, 1, 'Please ensure you are not commenting randomly on issues. As there is no further action, I will be closing this ticket. -Cat',
+	 TO_DATE('2024/07/10 21:06:13', 'yyyy/mm/dd hh24:mi:ss'));
 
 
 -- 
@@ -398,4 +418,64 @@ INSERT INTO FilesInFolders(folderId, fileId) VALUES (10,6);
 INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
 	(7, TO_DATE('2024/07/11 18:09:00', 'yyyy/mm/dd hh24:mi:ss'), 'deleted file 2', 1, 'main', 1);
 INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (10,7);
+
+--
+-- User Create New Branch From Commit
+-- 1. New Branch
+-- 2. Create initial commit in Branch utilizing same folder oldCommit uses
+-- 	The reason it's oaky is because we didn't insert/update/delete any files => thus all filepaths and filecontents are the same
+--
+
+-- ADD DEMO BRANCH
+-- User Create New Branch From Commit
+-- 1. New Branch
+INSERT INTO Branch(repoid,name, createdOn) VALUES 
+	(1, 'my-first-branch', TO_DATE('2024/07/12', 'yyyy/mm/dd'));
+-- 2. Create initial commit in Branch utilizing same folder oldCommit uses
+-- 	The reason it's oaky is because we didn't insert/update/delete any files => thus all filepaths and filecontents are the same
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(8, TO_DATE('2024/07/12 08:10:00', 'yyyy/mm/dd hh24:mi:ss'), 'Initialized Branch', 1, 'my-first-branch', 1);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (10,8);
+--
+
+-- UPDATE FILE IN DEMO BRANCH
+-- User Update File in Branch: Same as updating in Main
+-- 1. Create new version of File
+-- 	1a. Create new Blob if needed, potentially require us to change sqlterminator
+set sqlterminator "~"
+INSERT INTO Blob (hash, content)  VALUES ('DF3B852F0FD6EA4138909ND2DFD2CBE5479B49F8D87658B69D1B54C0C285EC5F',
+	'#include <iostream>
+	const int n = 3;
+	const int DSIZE = 10;
+	const int block_size = 32;
+	const int version = 12;'
+)~
+set sqlterminator ";"
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+	(11, '/hello.cpp', TO_DATE('2024/07/12', 'yyyy/mm/dd'), 'DF3B852F0FD6EA4138909ND2DFD2CBE5479B49F8D87658B69D1B54C0C285EC5F');
+-- 2. Create necessary new Folders, including updating numberOffiles attribute
+INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(12, '/', TO_DATE('2024/07/12', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+INSERT INTO Folders(id, numberOfFiles) VALUES (12, 1);
+-- 3. Put all files and folders into new folder
+--		NOTE: the entire folder path that was changed must be created anew, but all other files that were not changed can be reused
+--		EX: / has files A and Folder B and C; B/ has files D; C/ has files E
+--			 You change files E: This requires: new folder /, new folder C, and new file E. The remaining can be left the same
+INSERT INTO FilesInFolders(folderId, fileId) VALUES (12,11);
+-- 4. Create new Commit and attach Folder
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(9, TO_DATE('2024/07/12 08:21:00', 'yyyy/mm/dd hh24:mi:ss'), 'added version', 1, 'my-first-branch', 1);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (12,9);
+--
+
+-- ADD DEMO BRANCH FROM EMPTY COMMIT
+-- User Create New Branch From Commit
+-- 1. New Branch
+INSERT INTO Branch(repoid,name, createdOn) VALUES 
+	(3, 'init-react-app', TO_DATE('2024/07/13', 'yyyy/mm/dd'));
+-- 2. Create initial commit in Branch utilizing same folder oldCommit uses
+-- 	The reason it's oaky is because we didn't insert/update/delete any files => thus all filepaths and filecontents are the same
+INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+	(10, TO_DATE('2024/07/13 09:26:00', 'yyyy/mm/dd hh24:mi:ss'), 'Initialized Branch', 3, 'init-react-app', 3);
+INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (3,10);
 
