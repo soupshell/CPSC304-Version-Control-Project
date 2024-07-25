@@ -1,0 +1,11 @@
+
+.env
+Dockerfile
+
+
+/frontend/node_modules
+/frontend/yarn-error.log
+
+
+/backend/node_modules
+/backend/yarn-error.log
