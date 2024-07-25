@@ -41,15 +41,14 @@ We will talk to TA on July 26 to ask for help, and then spend time after call se
 
 * Everyone checks Aug 3rd, if we’re done. If not, everyone helps each other on Aug 4th.
 
-### Timeline ###
+### Frontend Task Allocation ###
 
 <img width="572" alt="TimelineDiagram" src="https://media.github.students.cs.ubc.ca/user/17684/files/29575831-0db6-45ac-9ed7-717b5edb377e">
 
 
 ### UI Draft ###
 
-<img width="910" alt="UI-Draft" src="https://media.github.students.cs.ubc.ca/user/17684/files/f53fdf09-5786-426a-9324-5d383edb80e0">
-
+Please see Milestone 3 UI Draft-3 file in repository. 
 
 
 
