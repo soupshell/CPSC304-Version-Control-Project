@@ -1,3 +1,7 @@
+import Projection from '../components/Projection';
+import AggNest from '../components/AggNest';
+import AggHav from '../components/AggHav';
+
 
 function UsersList(props) {
 
@@ -5,9 +9,9 @@ function UsersList(props) {
      <>
        <h1>Our Users</h1>
        <div className="centerDiv">
-        <p>Projection</p>
-        <p>Aggregation Nested</p>
-        <p>Aggregation HAVING</p>
+        <Projection />
+        <AggNest />
+        <AggHav />
        </div>
 
        <div className="centerDiv">

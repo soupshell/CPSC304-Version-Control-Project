@@ -13,6 +13,17 @@
   gap: 4px;
 }
 
+.centerColDiv {
+  border-radius: 0.5rem;
+  background-color: #645276;
+  box-shadow: 0px 5px 8px #525252;
+  display: flex;
+  padding: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .ctgrey-button {
   border-radius: 1rem;
