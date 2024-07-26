@@ -5,10 +5,13 @@ function AuthBox(props) {
    const description = (title && title == 'Login') ? "For users with existing accounts" : "For first time users!";
    const handleSubmit = () => {
       console.log(title + " submitted.")
+      console.log()
    };
    const [formValues, setFormValues] = useState({});
    const handleChange = (e) => {
-    setFormValues({[e.target.id]:e.target.value});
+    let temp = formValues
+    temp[e.target.id] = e.target.value
+    setFormValues(formValues);
     console.log(formValues); 
    }
    
@@ -18,14 +21,14 @@ function AuthBox(props) {
       <p >{description}</p>
       <form onSubmit={handleSubmit}>
       <label> Email:
-        <input type="text" onChange={handleChange} />        
+        <input type="text" id={title +'-email'} onChange={handleChange} required/>        
       </label>
       <label> Password:
-        <input type="password" onChange={handleChange} />        
+        <input type="password" id={title +'-pwd'} onChange={handleChange} required/>        
       </label>
       {title != 'Login' && 
           <label> Username:
-            <input type="text" onChange={handleChange} />        
+            <input type="text" id={title +'-username'} onChange={handleChange} required/>        
           </label>}
       <input type="submit" value="Submit" />
       </form>
