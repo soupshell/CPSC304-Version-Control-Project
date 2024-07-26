@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const rootPath = "../../"
-require('dotenv').config({path : rootPath + ".env"});
+const router = require('./src/routes/routes.js');
+require('dotenv').config({path : path.join(rootPath,".env")});
 
 
+app.use(router);
 const port = process.env.port || 3000;
 
 app.listen(port, () =>
