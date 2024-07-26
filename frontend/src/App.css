@@ -13,6 +13,16 @@
   gap: 4px;
 }
 
+
+.ctgrey-button {
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: rgb(228, 229, 224);
+}
+.ctgrey-button:hover{
+  background-color: rgb(144, 167, 209);
+}
+
 .card-container {
   width: 17rem;
   border-radius: 1rem;
