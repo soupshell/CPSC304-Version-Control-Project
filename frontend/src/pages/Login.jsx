@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom';
 function Login(props) {
 
   return (
-    
     <>
       <h1>Welcome to <i>your</i> Version Control</h1>
       <div className="centerDiv">
