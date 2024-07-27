@@ -67,7 +67,12 @@
   background-color: rgb(228, 229, 224);
 }
 .ctgrey-button:hover{
-  background-color: rgb(144, 167, 209);
+  background-color: rgb(203, 213, 232);
+}
+
+.ctgrey-li {
+  list-style-type: none;
+  margin: 0.5rem;
 }
 
 .card-container {

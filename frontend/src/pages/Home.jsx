@@ -1,4 +1,5 @@
 import HomeHeader from '../components/HomeHeader'
+import RepoLinkBox from '../components/RepoLinkBox'
 
 function Home(props) {
   const repos = [
@@ -17,7 +18,7 @@ function Home(props) {
       'userPerm': 'Edit'
     }
   ];
-  const listItems = repos.map(repo => <li>{repo.name}</li>);
+  const listItems = repos.map(repo => <li className='ctgrey-li'><RepoLinkBox repoInfo={repo} /></li>);
   return (
     <>
      <HomeHeader/>
