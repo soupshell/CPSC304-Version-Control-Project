@@ -1,14 +1,15 @@
 import UserBox from '../components/UserBox'
 
-function HomeHeader(props) {
+function RepoHeader(props) {
+  
 
   return (
     <div className="centerDiv">
-     <h2> Home Header: create repo part</h2>
+     <h2> RepoName </h2>
      <UserBox/>
      
     </div>
   )
 }
 
-export default HomeHeader;
+export default RepoHeader;
