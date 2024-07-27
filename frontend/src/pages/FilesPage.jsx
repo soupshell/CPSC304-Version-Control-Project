@@ -1,17 +1,23 @@
 import "../css/FilePage.css";
 import { useState } from "react";
 import ContributorTable from "../components/ContributorTable";
+import { useParams, Link } from "react-router-dom";
 
 const fileContent = "hello";
 
 function FilePage(props) {
-  const username = "Username";
+  const params = useParams();
+  const username = params.User;
+
+  console.log(params);
 
   const fileData = {
     contributors: {username: "Edit", username2: "Owner" },
-    repoName: "Best project world",
-    fileName : "file.txt",
-    createdOnDate : "june 1st 2024"
+    repoName: params.Repo,
+    fileName : "test file 1",
+    fileID : params.File,
+    createdOnDate : "june 1st 2024",
+    fileContent: "helloooo"
   };
 
   const [fileState, setState] = useState(fileData);

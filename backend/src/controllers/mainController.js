@@ -1,9 +1,10 @@
 
 const express = require('express');
-
+const oracletest = require('./oracletest')
 
 async function testFunction(req,res){
-    res.send({hello : "txt"});
+   await oracletest.testOracleConnection();
+   res.send({hello : "txt"});
 }
 
 module.exports = {testFunction};
