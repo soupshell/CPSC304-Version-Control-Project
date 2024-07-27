@@ -16,7 +16,7 @@ function RepoHome(props) {
       { filepath: "/file1.txt", fileId: "3" },
       { filepath: "/file2.cpp", fileId: "3" },
     ],
-    contributors: [{ username: "Edit", username2: "Owner" }],
+    contributors: {username: "Edit", username2: "Owner" },
   };
   const [repoState, setState] = useState(repoData);
   if (!repoData) {
@@ -34,9 +34,15 @@ function RepoHome(props) {
     );
   }
 
+  const contributorRows = [];
+  Object.entries(repoState['contributors']).forEach(([key, value]) => {
+    contributorRows.push((<tr><td>{key}</td> <td>{value}</td> </tr>));
+  });
+
   return (
     <>
       <RepoHeader />
+      <div>
       <div className="centerDiv">
         <h2>
           Repo <i>{repoState["repoName"]}</i>'s Home Page
@@ -48,11 +54,27 @@ function RepoHome(props) {
         <h3> commitId: {repoState['currCommitId']}</h3>
       </div>
       <div className="centerDiv">
-        <p>Folders and files</p>
-        <div>
-          <p>Contributors</p>
-          <p>issues Button</p>
+        <ul className='centerColDiv'>
+          Folders and files
+          {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder['filepath']}</button></li>)}
+          {repoState["files"].map(file => <li className='ctgrey-li'><button onClick=''>{file['filepath']}</button></li>)}
+        </ul>
+        <div >
+          <table border="1">
+            <thead>
+                <tr>
+                    <th>Contributor Username</th>
+                    <th>Permissions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {contributorRows}
+            </tbody>
+          </table>
+          <br/>
+          <button onClick=''>issues Button</button>
         </div>
+      </div>
       </div>
     </>
   );
