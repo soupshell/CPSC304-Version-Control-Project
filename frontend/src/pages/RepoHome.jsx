@@ -57,7 +57,7 @@ function RepoHome(props) {
         <ul className='centerColDiv'>
           Folders and files
           {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder['filepath']}</button></li>)}
-          {repoState["files"].map(file => <li className='ctgrey-li'><Link to={'/username/' + repoState['repoName'] + '/' + file['fileId']}>
+          {repoState["files"].map(file => <li className='ctgrey-li'><Link to={file['fileId']}>
                                           {file['filepath']}</Link></li>)}
         </ul>
         <div >
