@@ -30,6 +30,7 @@ function App() {
       <Routes>
             <Route path="/" element={isVerified != 0 ? <Home />:<Login verifyFn={verify} />}/>
             <Route path="/RepoHome" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
+            <Route path="/UsersList" element={<UsersList/>}/>
             <Route path = "/:User/:Repo/:file" element = {<FilePage></FilePage>}> </Route>
       </Routes>
       </div>
