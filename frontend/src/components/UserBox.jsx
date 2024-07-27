@@ -4,7 +4,7 @@ function UserBox(props) {
    
    return (
      <>
-      <p> You are user: {user.email}</p>
+      <p> You are logged in as: {user}</p>
      </>
    );
  }

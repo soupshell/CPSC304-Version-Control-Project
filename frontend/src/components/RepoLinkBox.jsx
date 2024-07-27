@@ -12,7 +12,7 @@ import {Link} from 'react-router-dom';
 function RepoLinkBox(props) {
    const repo = props.repoInfo; 
    return (
-     <Link to='/RepoHome'>
+     <Link to={'/RepoHome/' + repo['id']}>
       <div className='ctgrey-button'>
          <p>{repo['name']}</p>
          <p>{repo['owner']}</p>
