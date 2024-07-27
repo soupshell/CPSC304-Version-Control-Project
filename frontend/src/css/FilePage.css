@@ -1,5 +1,6 @@
 .mainDiv {
   align-items: center;
+  display: flex;
   background-color: white;
   padding: 1px;
   height: 10vh;
