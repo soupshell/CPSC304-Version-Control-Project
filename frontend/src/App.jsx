@@ -29,8 +29,8 @@ function App() {
       <div className="App"> 
       <Routes>
             <Route path="/" element={isVerified != 0 ? <Home />:<Login verifyFn={verify} />}/>
-            <Route path="/RepoHome/:id" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
             <Route path="/UsersList" element={<UsersList/>}/>
+            <Route path="/:User/:Repo" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
             <Route path = "/:User/:Repo/:file" element = {<FilePage></FilePage>}> </Route>
       </Routes>
       </div>
