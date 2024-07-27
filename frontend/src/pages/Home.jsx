@@ -23,6 +23,7 @@ function Home(props) {
     <>
      <HomeHeader/>
      <div className='repos-container'>
+      <h2>List of repos you can contribute to:</h2>
       <ul>{listItems}</ul>
      </div>
 

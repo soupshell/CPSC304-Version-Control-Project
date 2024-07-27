@@ -17,7 +17,7 @@ function App() {
     const passcode = formValue['pwd'];
     if (users[email] == passcode) {
       console.log('set Session Storage as authenticated')
-      sessionStorage.setItem( 'isVerified', {'email':  formValue['email'], 'username':  formValue['username']} );
+      sessionStorage.setItem( 'isVerified', {'email':  formValue['email']});
       setStatus(1);
     } 
   }
@@ -27,8 +27,8 @@ function App() {
      <Router>
       <div className="App"> 
       <Routes>
-            <Route path="/" element={isVerified != 1 ? <Home />:<Login verifyFn={verify} />}/>
-            <Route path="/RepoHome" element={isVerified != 1 ? <RepoHome />:<Login verifyFn={verify} />}/>
+            <Route path="/" element={isVerified != 0 ? <Home />:<Login verifyFn={verify} />}/>
+            <Route path="/RepoHome" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
             <Route path="/UsersList" element={<UsersList/>}/>
       </Routes>
       </div>
