@@ -22,16 +22,16 @@ function AuthBox(props) {
       {title && <h1 >{title}</h1>}
       <p >{description}</p>
       <form onSubmit={handleSubmit}>
-      <label> Email:
-        <input type="email" id={'email'} onChange={handleChange} required/>        
+      <label> Username:
+            <input type="text" id={'username'} onChange={handleChange} required/>        
       </label>
       <label> Password:
         <input type="password" id={'pwd'} onChange={handleChange} required/>        
       </label>
       {title != 'Login' && 
-          <label> Username:
-            <input type="text" id={'username'} onChange={handleChange} required/>        
-          </label>}
+        <label> Email:
+          <input type="email" id={'email'} onChange={handleChange} required/>        
+        </label>}
       <input type="submit" value="Submit" />
       </form>
     </div>
