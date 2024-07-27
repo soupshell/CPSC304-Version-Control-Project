@@ -1,6 +1,7 @@
 import Projection from '../components/Projection';
 import AggNest from '../components/AggNest';
 import AggHav from '../components/AggHav';
+import Division from '../components/Division';
 
 
 function UsersList(props) {
@@ -15,10 +16,7 @@ function UsersList(props) {
        </div>
 
        <div className="centerDiv">
-        <div>
-          <p>Select Repos</p>
-          <p>Results</p>
-        </div> 
+        <Division />
        </div>
      </>
    )

@@ -13,6 +13,20 @@
   gap: 4px;
 }
 
+.divisionDivider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 4px;
+  border-radius: 0.5rem;
+  background-color: #9883ae;
+  box-shadow: 0px 5px 8px #525252;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+} 
+
 .centerColDiv {
   border-radius: 0.5rem;
   background-color: #645276;
@@ -21,6 +35,16 @@
   padding: 1rem;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkboxList {
+  border-radius: 0.5rem;
+  display: flex;
+  padding: 1rem;
+  justify-content: left;
+  align-items: left;
   flex-direction: column;
   gap: 4px;
 }

@@ -7,10 +7,8 @@ function AggNest(props) {
         <table id="aggregation-nested" border="1">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>username</th>
-                    <th>dateJoined</th>
-                    <th>email</th>
+                    <th>RepoCount</th>
                 </tr>
             </thead>
             <tbody>
