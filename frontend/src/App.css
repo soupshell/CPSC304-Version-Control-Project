@@ -49,6 +49,18 @@
   gap: 4px;
 }
 
+
+.repos-container {
+  gap: 4px;
+  border-radius: 0.5rem;
+  background-color: #9883ae;
+  box-shadow: 0px 5px 8px #525252;
+  margin-top: 2rem;
+  padding: 2rem;
+  padding-left: 1rem;
+  width: 75svw;
+}
+
 .ctgrey-button {
   border-radius: 1rem;
   padding: 1rem;
