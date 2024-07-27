@@ -1,0 +1,36 @@
+.mainDiv {
+  align-items: center;
+  background-color: white;
+  padding: 1px;
+  height: 10vh;
+}
+
+.headerSection {
+  width: 100%;
+}
+
+.filePage {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  padding: 1px;
+  height: 10vh;
+}
+
+.fileContentPage {
+  align-items: center;
+  background-color: grey;
+  width: 50vw;
+  height: 90vh;
+  border-radius: 10px;
+  padding: 1px;
+}
+
+.fileInfo {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fileContent {
+  color: white;
+}

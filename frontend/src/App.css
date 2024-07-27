@@ -87,3 +87,30 @@
   color: rgb(43, 38, 108);
   height: fit-content;
 }
+
+.mainDiv {
+  align-items: "center";
+  background-color: "white";
+  display: "flex";
+  padding: "1px";
+  height: "10vh";
+}
+
+.filePage {
+  align-items: "center";
+  background-color: "white";
+  display: "flex";
+  padding: "1px";
+  height: "10vh";
+}
+
+
+.fileContentPage {
+    align-items: "center";
+    background-color: "grey";
+    width: "50vw";
+    height: "90vh";
+    border-radius: "10px";
+    padding: "1px";
+}
+

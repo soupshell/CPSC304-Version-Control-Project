@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import RepoHome from './pages/RepoHome';
 import UsersList from './pages/UsersList';
+import FilePage from './pages/FilesPage.jsx'
 import './App.css';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/" element={isVerified != 0 ? <Home />:<Login verifyFn={verify} />}/>
             <Route path="/RepoHome" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
             <Route path="/UsersList" element={<UsersList/>}/>
+            <Route path = "/:User/:Repo/:file" element = {<FilePage></FilePage>}> </Route>
       </Routes>
       </div>
       </Router>
