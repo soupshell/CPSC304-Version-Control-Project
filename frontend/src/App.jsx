@@ -8,17 +8,17 @@ import FilePage from './pages/FilesPage.jsx'
 import './App.css';
 
 function App() {
-  const users = {'test@gmail.com': '1234'};
+  const users = {'testuser': '1234'};
 
   const [isVerified, setStatus] = useState(sessionStorage.getItem('isVerified') || 0);
   const verify = (formValue) => {
     console.log('verify caled');
     console.log(formValue);
-    const email = formValue['email'];
+    const username = formValue['username'];
     const passcode = formValue['pwd'];
-    if (users[email] == passcode) {
+    if (users[username] == passcode) {
       console.log('set Session Storage as authenticated')
-      sessionStorage.setItem( 'isVerified', formValue['email']);
+      sessionStorage.setItem( 'isVerified', formValue['username']);
       setStatus(1);
     } 
   }
