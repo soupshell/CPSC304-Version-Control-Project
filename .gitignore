@@ -8,4 +8,5 @@ Dockerfile
 /frontend/.env
 
 /backend/yarn-error.log
+/backend/node_modules
 /backend/.env
