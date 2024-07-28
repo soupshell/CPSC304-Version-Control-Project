@@ -6,6 +6,8 @@ import RepoHome from './pages/RepoHome';
 import UsersList from './pages/UsersList';
 import FilePage from './pages/FilesPage.jsx'
 import './App.css';
+import SQLTester from "./pages/SQLTester.jsx";
+import TesterPage from "./pages/SQLTester.jsx";
 
 function App() {
   const users = {'testuser': '1234'};
@@ -32,6 +34,7 @@ function App() {
             <Route path="/UsersList" element={<UsersList/>}/>
             <Route path="/:User/:Repo" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} />}/>
             <Route path = "/:User/:Repo/:File" element = {<FilePage></FilePage>}> </Route>
+            <Route path = "/testSQL" element = {<TesterPage></TesterPage>}> </Route>
       </Routes>
       </div>
       </Router>
