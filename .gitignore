@@ -5,7 +5,7 @@ Dockerfile
 
 /frontend/node_modules
 /frontend/yarn-error.log
+/frontend/.env
 
-
-/backend/node_modules
 /backend/yarn-error.log
+/backend/.env

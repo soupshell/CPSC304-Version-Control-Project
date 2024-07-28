@@ -17,8 +17,6 @@ async function initializeConnectionPool() {
     try {
         await oracledb.createPool(dbConfig);
         console.log('Connection pool started');
-        const str = await testOracleConnection();
-        console.log(str);
     } catch (err) {
         console.error('Initialization error: ' + err.message);
     }
@@ -36,6 +34,8 @@ async function closePoolAndExit() {
     }
 }
 
+
+// uncomment if you want to connect to db
 initializeConnectionPool();
 
 process

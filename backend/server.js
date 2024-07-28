@@ -1,11 +1,9 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const rootPath = "../"
+const rootPath = "./"
 require('dotenv').config({path : path.join(rootPath,".env")});
 const router = require('./src/routes/routes.js');
-
-
 
 
 app.use(router);
