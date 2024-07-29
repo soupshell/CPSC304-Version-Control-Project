@@ -2,9 +2,9 @@ import React from "react";
 
 
 // have to change this everytime lol
-const reqPath = "http://localhost:50005/";
+const reqPath = "http://localhost:50007/";
 
-async function testConnectionToBackend(str) {
+async function queryDB(str) {
   var request = reqPath.concat("testSQL");
   try {
     const response = await fetch(request, {
@@ -24,4 +24,4 @@ async function testConnectionToBackend(str) {
   }
 }
 
-export { testConnectionToBackend };
+export { queryDB };
