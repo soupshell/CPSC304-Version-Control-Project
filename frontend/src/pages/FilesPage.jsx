@@ -1,15 +1,23 @@
+import React, { useEffect }  from "react";
 import "../css/FilePage.css";
 import { useState } from "react";
 import ContributorTable from "../components/ContributorTable";
 import { useParams, Link } from "react-router-dom";
+import { queryDB } from "../controller/controller";
 
 const fileContent = "hello";
 
 function FilePage(props) {
   const params = useParams();
   const username = params.User;
+  const loggedInUser = sessionStorage.getItem("isVerified");
 
-  console.log(params);
+  useEffect(() => {
+    async function checkAccess(){
+    }
+    
+    checkAccess();
+  }, []);
 
   const fileData = {
     contributors: {username: "Edit", username2: "Owner" },
