@@ -39,8 +39,18 @@ async function closePoolAndExit() {
 initializeConnectionPool();
 
 process
-    .once('SIGTERM', closePoolAndExit)
-    .once('SIGINT', closePoolAndExit);
+    .once('SIGTERM', async () => {
+        await closePoolAndExit();
+        process.exit();
+      })
+    .once('SIGINT', async () => {
+        await closePoolAndExit();
+        process.exit();
+      })
+    .once('SIGUSR2', async () => {
+        await closePoolAndExit();
+        process.exit();
+      });
 
 
 // ----------------------------------------------------------

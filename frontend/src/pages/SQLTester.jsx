@@ -39,8 +39,9 @@ AND ru.userid = u.id
         <button
           onClick={async () => {
             console.log(testInput);
-            const result = await queryDB(testInput);
+          const result = await queryDB(testInput);
             setQueryResult(result);
+           
           }}
         >
           {" "}
