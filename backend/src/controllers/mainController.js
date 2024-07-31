@@ -1,7 +1,6 @@
 
 const express = require('express');
 const oracle = require('./oracletest')
-var currentUser = {username : "", password : ""}
 
 async function testOracle(req, res) {
    try {
@@ -9,7 +8,7 @@ async function testOracle(req, res) {
       if (result) {
          return res.send("success");
       } else {
-         return 
+         return
       }
    } catch (error) {
       console.log(error);
@@ -17,24 +16,12 @@ async function testOracle(req, res) {
    }
 }
 
-async function testFunction(req, res) {
-   try {
-      await oracle.withOracleDB(async (connection) => {
-         const result = await connection.execute(`SELECT numberOfFiles 
-         FROM Folders`);
-         res.send(result);
-      });
-   } catch (e) {
-      res.status(400).send("error");
-   }
-
-}
-
 async function executeSQL(req, res) {
    try {
       await oracle.withOracleDB(async (connection) => {
          console.log(req.body);
          const result = await connection.execute(req.body.string);
+         await connection.commit();
          res.json(result);
       });
    } catch (e) {
@@ -44,14 +31,13 @@ async function executeSQL(req, res) {
 }
 
 
-async function checkUserHasAccessToFile(req,res){
+async function checkUserHasAccessToFile(req, res) {
+   const username = req.body.username;
+   const password = req.body.password;
    try {
       await oracle.withOracleDB(async (connection) => {
          console.log(req.body);
-         const result = await connection.execute(`
-            
-            
-      `);
+         const result = await connection.execute(` `);
          res.json(result);
       });
    } catch (e) {
@@ -59,20 +45,36 @@ async function checkUserHasAccessToFile(req,res){
    }
 }
 
-async function checkLogin(req, res){
+async function checkLogin(req, res) {
    try {
       const username = req.body.username;
       const password = req.body.password;
-      
-      if(username === null ||  password === null){
+
+      console.log(username, password);
+
+      if (username === null || password === null) {
          res.status(400).send("empty username or password");
       }
-         console.log(req.body.username);
-         console.log(req.body.password);
-       
 
       await oracle.withOracleDB(async (connection) => {
-         res.json({validLogin: true});
+         const result = await connection.execute(`
+            SELECT hashPassword 
+            FROM Users1 u1
+            WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)`, { username: username });
+
+
+           console.log(result);
+         if (Array.isArray(result.rows) && result.rows.length > 0 &&
+            Array.isArray(result.rows[0]) && result.rows[0].length > 0
+            && result.rows[0][0] === password) {
+            res.json({ validLogin: true });
+         } else {
+            if(Array.isArray(result.rows) && result.length > 0 &&
+            Array.isArray(result.rows[0]) && result.rows[0].length > 0){
+               console.log(result.rows[0][0], password);
+            }
+            res.status(400).send("INVALID PASSWORD");
+         }
       });
    } catch (e) {
       res.status(400).send(e.error);
@@ -80,4 +82,40 @@ async function checkLogin(req, res){
 }
 
 
-module.exports = {checkLogin, testFunction, testOracle,executeSQL };
+async function addUserToDB(req, res) {
+   try {
+      const username = req.body.username;
+      const password = req.body.password;
+      const email = req.body.email;
+      const date = "2024/07/03"
+    
+
+      console.log(username, password, email);
+
+      if (username === null || password === null || email === null) {
+         res.status(400).send("empty username, password or email");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        v_count INTEGER;
+      BEGIN
+        SELECT COUNT(email) + 1 INTO v_count FROM Users1;
+        INSERT INTO Users1(email, hashPassword) VALUES (:email, :password);
+        INSERT INTO Users2(id, username, dateJoined, email) 
+        VALUES (v_count, :username, TO_DATE(:date, 'yyyy/mm/dd'), :email);
+        COMMIT;
+      END;
+            `, { username: username, password:password, email: email, date: date});
+
+            console.log(result);
+            res.json({ validLogin: true });
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB };

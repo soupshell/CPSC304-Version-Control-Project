@@ -3,13 +3,17 @@ import { useState } from 'react';
 function AuthBox(props) {
    const title = props.title;
    const description = (title && title == 'Login') ? "For users with existing accounts" : "For first time users!";
-   const handleSubmitLogin = () => {
-      props.verifyFn(formValues);
+   const handleSubmitLogin = (e) => {
+    console.log(e);
+     e.preventDefault();
+       props.verifyFn(formValues);
    };
-   const handleSubmitSignup = () => {
-    console.log('signup form submitted');
+   const handleSubmitSignup =  (e) => {
+    console.log(e);
+     e.preventDefault();
+     props.verifyFn(formValues);
    };
-   const handleSubmit = (title && title == 'Login') ? handleSubmitLogin : handleSubmitSignup; 
+   const handleSubmit =  (title && title == 'Login') ? handleSubmitLogin : handleSubmitSignup; 
    const [formValues, setFormValues] = useState({});
    const handleChange = (e) => {
     let temp = formValues

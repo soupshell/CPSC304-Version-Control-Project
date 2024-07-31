@@ -8,7 +8,7 @@ function Login(props) {
       <div className="centerDiv">
         <AuthBox title='Login' verifyFn={props.verifyFn} />
         <p> -- or --</p>
-        <AuthBox title='Signup' verifyFn={props.verifyFn}/>
+        <AuthBox title='Signup' verifyFn={props.signupFn}/>
       </div>
       <div className="centerDiv">
         <Link to='/UsersList' className="ctgrey-button"> See our users </Link>

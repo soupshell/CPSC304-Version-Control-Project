@@ -10,16 +10,28 @@ AND ru.userid = u.id
     `);
 
   const [queryResult, setQueryResult] = useState([]);
+  const [colNames, setColNames] = useState([]);
 
-  function mapResults(arr) {
-    const newArr = arr.map((rowResults) => {
+  function mapResults(colNamesArr, resultArr) {
+    const colNames = colNamesArr.map((elem) => {
+      return <p style={{ fontSize: "15px", padding: "10px" }}> {elem.name}</p>;
+    });
+
+    const colNameList = [<ul style={{ display: "flex" }}> {colNames} </ul>];
+
+    const resultList = resultArr.map((rowResults) => {
       const secondArr = rowResults.map((elem) => {
         return <p style={{ fontSize: "15px", padding: "10px" }}> {elem}</p>;
       });
       return <ul style={{ display: "flex" }}> {secondArr}</ul>;
     });
 
-    return newArr;
+    return (
+      <div>
+        {" "}
+        {colNameList} {resultList}
+      </div>
+    );
   }
 
   return (
@@ -39,16 +51,19 @@ AND ru.userid = u.id
         <button
           onClick={async () => {
             console.log(testInput);
-          const result = await queryDB(testInput);
-            setQueryResult(result);
-           
+            const result = await queryDB(testInput);
+            const rows = result.rows;
+            const colNames = result.metaData;
+            
+            if (rows){setQueryResult(rows);}
+            if (colNames){ setColNames(colNames);}
           }}
         >
           {" "}
           Send
         </button>
       </div>
-      <ul> {mapResults(queryResult)}</ul>
+      <ul> {mapResults(colNames, queryResult)}</ul>
     </div>
   );
 }
