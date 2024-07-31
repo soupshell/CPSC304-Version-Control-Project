@@ -15,21 +15,20 @@ async function queryDB(str) {
     });
 
     if (!response.ok) {
-      console.log(response);
-      return [];
+      console.log(await response.text());
+      return {};
     }
 
     const data = await response.json();
-    console.log(data.rows);
-    return data.rows;
+    return data;
   } catch (e) {
     console.log(e);
-    return [];
+    return {};
   }
 }
 
 
-async function login(username, password) {
+async function userLogin(username, password) {
   var request = reqPath.concat("login");
   try {
     const response = await fetch(request, {
@@ -43,12 +42,38 @@ async function login(username, password) {
     });
 
     if (!response.ok) {
-      console.log(response);
+      console.log(await response.text());
       return false;
     }
 
-    const data = await response.json();
-    console.log(data);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function userSignup(username, password, email) {
+  var request = reqPath.concat("signup");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        email: email
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+
+  
     return true;
   } catch (e) {
     console.log(e);
@@ -62,4 +87,4 @@ async function login(username, password) {
 
 
 
-export {login, queryDB };
+export {userLogin, queryDB, userSignup};

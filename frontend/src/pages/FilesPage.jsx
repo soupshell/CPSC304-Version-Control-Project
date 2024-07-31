@@ -3,7 +3,7 @@ import "../css/FilePage.css";
 import { useState } from "react";
 import ContributorTable from "../components/ContributorTable";
 import { useParams, Link } from "react-router-dom";
-import { login, queryDB } from "../controller/controller";
+import {userLogin, queryDB } from "../controller/controller";
 
 const fileContent = "hello";
 
@@ -12,40 +12,25 @@ function FilePage(props) {
   const pathUsername = params.User;
   const repoName = params.repo;
   const loggedInUser = sessionStorage.getItem("isVerified");
+  const currentUserPassword = sessionStorage.getItem("password");
   const [hasAccess, setHasAccess] = useState(false);
   const [checkAccess, setCheckAccess] = useState(false);
 
-  console.log(loggedInUser);
+  console.log(loggedInUser, currentUserPassword);
 
   useLayoutEffect(() => {
-    // whole check should be done on backend
     async function checkAccess() {
-      
-      console.log("logging in");
-      await login(loggedInUser, "1234");
-
-      setHasAccess(true);
-      setCheckAccess(true);
-
-      // setTimeout(() => {
-      //   setHasAccess(true);
-      //   setCheckAccess(true);
-      // }, 2000);
+      try {
+        const hasAccess = await userLogin(loggedInUser, currentUserPassword)
+        setHasAccess(hasAccess);
+        setCheckAccess(true);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     checkAccess();
   }, []);
-
-  const fileData = {
-    contributors: { username: "Edit", username2: "Owner" },
-    repoName: params.Repo,
-    fileName: "test file 1",
-    fileID: params.File,
-    createdOnDate: "june 1st 2024",
-    fileContent: "helloooo",
-  };
-
-  const [fileState, setState] = useState(fileData);
 
   if (checkAccess === false) {
     return <div> </div>;
@@ -60,6 +45,19 @@ function FilePage(props) {
       </div>
     );
   }
+
+  const fileData = {
+    contributors: { username: "Edit", username2: "Owner" },
+    repoName: params.Repo,
+    fileName: "test file 1",
+    fileID: params.File,
+    createdOnDate: "june 1st 2024",
+    fileContent: "helloooo",
+  };
+
+  const [fileState, setState] = useState(fileData);
+
+  
 
   return (
     <div className="mainDiv">
