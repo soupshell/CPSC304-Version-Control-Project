@@ -15,21 +15,20 @@ async function queryDB(str) {
     });
 
     if (!response.ok) {
-      console.log(response);
-      return [];
+      console.log(await response.text());
+      return {};
     }
 
     const data = await response.json();
-    console.log(data.rows);
-    return data.rows;
+    return data;
   } catch (e) {
     console.log(e);
-    return [];
+    return {};
   }
 }
 
 
-async function login(username, password) {
+async function userLogin(username, password) {
   var request = reqPath.concat("login");
   try {
     const response = await fetch(request, {
@@ -43,13 +42,95 @@ async function login(username, password) {
     });
 
     if (!response.ok) {
-      console.log(response);
+      console.log(await response.text());
       return false;
     }
 
-    const data = await response.json();
-    console.log(data);
+    return (await response.json()).validLogin;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function userSignup(username, password, email) {
+  var request = reqPath.concat("signup");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        email: email
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+
     return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function checkAccess(username, password, repoName) {
+  var request = reqPath.concat("hasAccess");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        repoName: repoName
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+
+    return (await response.json()).validLogin;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function getFileContent(username, password, repoName, fileID) {
+  var request = reqPath.concat("GetContent");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        repoName: repoName,
+        fileID: fileID
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
   } catch (e) {
     console.log(e);
     return false;
@@ -62,4 +143,5 @@ async function login(username, password) {
 
 
 
-export {login, queryDB };
+
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent};
