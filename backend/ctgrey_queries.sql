@@ -14,20 +14,15 @@ and   u1.hashPassword = 'hashedpassword';
 -- SIGNUP submission button
 -- 1) insert row
 insert into Users1(email, hashPassword) VALUES ('new@gmail.com', 'nextpassword');
-insert into Users2(id,username,dateJoined, email) VALUES (6, 'newusername', current_date, 'new@gmail.com');
+insert into Users2(id,username,dateJoined, email) VALUES 
+   ((select max(id)+1 from Users2), 'newusername1', current_date, 'new@gmail.com');
 
 -- handle errors #TODO
 
 --------------------------
 -- Render Users Page
 -- UserList: PROJECTION
--- 1- get all table names
-select table_name from user_tables;
--- 2- get all column names
-select column_name from all_tab_cols
-where table_name = 'USERS1';
--- 3- get projection
-select 'values of columsn inserted, check for injection'
+select 'values of columns inserted, check for injection'
 from users1_inserted_dynamically; 
 
 -- TODO: fix react components with new AGG stuff
