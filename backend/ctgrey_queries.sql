@@ -13,9 +13,10 @@ and   u1.hashPassword = 'hashedpassword';
 -- # TODO TODO TODO !!! confirm with Team about password workings- one email has multiple passwords
 -- SIGNUP submission button
 -- 1) insert row
-insert into Users1;
+insert into Users1(email, hashPassword) VALUES ('new@gmail.com', 'nextpassword');
+insert into Users2(id,username,dateJoined, email) VALUES (6, 'newusername', current_date, 'new@gmail.com');
 
--- handle errors
+-- handle errors #TODO
 
 --------------------------
 -- Render Users Page
