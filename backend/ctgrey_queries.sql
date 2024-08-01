@@ -100,3 +100,12 @@ and u_r.repoid = r.id
 --------------------------
 -- Render RepoPage
 -- GIVEN USERNAME
+-- get latest commit from branch name
+-- starting with 'main'
+--  select to_char(datecreated, 'MM/DD/YY HH:MI:SS A.M.') from commits;
+
+-- given a commit, select the starting folder- non recursive for now
+
+-- get contributors
+
+-- make new branch and change branch
