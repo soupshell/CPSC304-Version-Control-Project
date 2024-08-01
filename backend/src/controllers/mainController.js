@@ -1,6 +1,6 @@
 
 const express = require('express');
-const oracle = require('./oracletest')
+const oracle = require('./oracletest');
 
 async function testOracle(req, res) {
    try {
@@ -31,14 +31,27 @@ async function executeSQL(req, res) {
 }
 
 
-async function checkUserHasAccessToFile(req, res) {
+async function checkUserHasAccessToRepo(req, res) {
    const username = req.body.username;
    const password = req.body.password;
+   const repoName = req.body.repoName;
    try {
       await oracle.withOracleDB(async (connection) => {
-         console.log(req.body);
-         const result = await connection.execute(` `);
-         res.json(result);
+       console.log(username,password,repoName);
+       const result = await connection.execute(` 
+       SELECT Count(*)
+       FROM Users2 u2, UserContributesTo uc, Repo r, Permissions p, Users1 u1
+       WHERE u2.id = uc.userid
+       AND u2.email = u1.email
+       AND r.id = uc.repoid
+       AND p.permissions = uc.permissions
+       AND (p.READWRITE = 'READ' OR p.READWRITE = 'WRITE')
+       AND u2.username = :username
+       AND u1.hashPassword = :password
+       AND r.name = :repoName
+      `,{username: username, password:password, repoName: repoName});
+      console.log(result);
+      res.json({validLogin: result.rows[0][0]});
       });
    } catch (e) {
       res.status(400).send(e.error);
@@ -58,23 +71,12 @@ async function checkLogin(req, res) {
 
       await oracle.withOracleDB(async (connection) => {
          const result = await connection.execute(`
-            SELECT hashPassword 
+            SELECT Count(*)
             FROM Users1 u1
-            WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)`, { username: username });
-
-
-           console.log(result);
-         if (Array.isArray(result.rows) && result.rows.length > 0 &&
-            Array.isArray(result.rows[0]) && result.rows[0].length > 0
-            && result.rows[0][0] === password) {
-            res.json({ validLogin: true });
-         } else {
-            if(Array.isArray(result.rows) && result.length > 0 &&
-            Array.isArray(result.rows[0]) && result.rows[0].length > 0){
-               console.log(result.rows[0][0], password);
-            }
-            res.status(400).send("INVALID PASSWORD");
-         }
+            WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)
+           AND u1.hashPassword = :password `, { username: username, password: password });
+           
+           res.json({validLogin: result.rows[0][0]});
       });
    } catch (e) {
       res.status(400).send(e.error);
@@ -87,8 +89,6 @@ async function addUserToDB(req, res) {
       const username = req.body.username;
       const password = req.body.password;
       const email = req.body.email;
-      const date = "2024/07/03"
-    
 
       console.log(username, password, email);
 
@@ -99,15 +99,17 @@ async function addUserToDB(req, res) {
       await oracle.withOracleDB(async (connection) => {
          const result = await connection.execute(`
       DECLARE
-        v_count INTEGER;
+        var_count INTEGER;
+        var_date DATE;
       BEGIN
-        SELECT COUNT(email) + 1 INTO v_count FROM Users1;
+        SELECT CURRENT_DATE INTO var_date FROM DUAL;
+        SELECT COUNT(email) + 1 INTO var_count FROM Users1;
         INSERT INTO Users1(email, hashPassword) VALUES (:email, :password);
         INSERT INTO Users2(id, username, dateJoined, email) 
-        VALUES (v_count, :username, TO_DATE(:date, 'yyyy/mm/dd'), :email);
+        VALUES (var_count, :username, TO_DATE(var_date, 'yyyy/mm/dd'), :email);
         COMMIT;
       END;
-            `, { username: username, password:password, email: email, date: date});
+            `, { username: username, password:password, email: email});
 
             console.log(result);
             res.json({ validLogin: true });
@@ -118,4 +120,4 @@ async function addUserToDB(req, res) {
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB };
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo };
