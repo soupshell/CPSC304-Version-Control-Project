@@ -72,6 +72,7 @@ CREATE TABLE Comments(
 		REFERENCES Users2(id),
 	FOREIGN KEY (issueId)
 		REFERENCES Issues(id)
+		ON DELETE CASCADE
 );
 
 CREATE TABLE Branch(
