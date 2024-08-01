@@ -46,7 +46,7 @@ async function userLogin(username, password) {
       return false;
     }
 
-    return true;
+    return (await response.json()).validLogin;
   } catch (e) {
     console.log(e);
     return false;
@@ -73,8 +73,64 @@ async function userSignup(username, password, email) {
       return false;
     }
 
-  
     return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function checkAccess(username, password, repoName) {
+  var request = reqPath.concat("hasAccess");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        repoName: repoName
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+
+    return (await response.json()).validLogin;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function getFileContent(username, password, repoName, fileID) {
+  var request = reqPath.concat("GetContent");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username,
+        password: password,
+        repoName: repoName,
+        fileID: fileID
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
   } catch (e) {
     console.log(e);
     return false;
@@ -87,4 +143,5 @@ async function userSignup(username, password, email) {
 
 
 
-export {userLogin, queryDB, userSignup};
+
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent};

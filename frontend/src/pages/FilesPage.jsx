@@ -3,63 +3,72 @@ import "../css/FilePage.css";
 import { useState } from "react";
 import ContributorTable from "../components/ContributorTable";
 import { useParams, Link } from "react-router-dom";
-import {userLogin, queryDB } from "../controller/controller";
+import {userLogin, queryDB, getFileContent } from "../controller/controller";
 
 const fileContent = "hello";
 
 function FilePage(props) {
   const params = useParams();
   const pathUsername = params.User;
-  const repoName = params.repo;
+  const repoName = params.Repo;
+  const fileID = params.FileID;
   const loggedInUser = sessionStorage.getItem("isVerified");
   const currentUserPassword = sessionStorage.getItem("password");
-  const [hasAccess, setHasAccess] = useState(false);
-  const [checkAccess, setCheckAccess] = useState(false);
+  const [access, setAccess] = useState({checkedAccess : false, hasAccess : false, fileExists: false});
+
+  const [fileState, setFileData] = useState({
+    contributors: {},
+    repoName: "",
+    fileName: "",
+    fileID: "",
+    createdOnDate: "",
+    fileContent: "",
+  });
+  
 
   console.log(loggedInUser, currentUserPassword);
 
-  useLayoutEffect(() => {
-    async function checkAccess() {
+  useEffect(() => {
+    async function check() {
       try {
-        const hasAccess = await userLogin(loggedInUser, currentUserPassword)
-        setHasAccess(hasAccess);
-        setCheckAccess(true);
+        const auth = await getFileContent(loggedInUser, currentUserPassword, repoName, fileID);
+        const access = auth.validLogin;
+        const fileInfo = auth.queryResult;
+        setAccess({checkedAccess: true, hasAccess: Boolean(access)});
+        setFileData({
+            contributors: { username1: "Edit", username2: "Owner" },
+            repoName: params.Repo,
+            fileName: "test file 1",
+            fileID: params.File,
+            createdOnDate: "june 1st 2024",
+            fileContent: "",
+          });
       } catch (e) {
         console.log(e);
       }
     }
 
-    checkAccess();
+    check();
   }, []);
-
-  if (checkAccess === false) {
-    return <div> </div>;
-  } else if (hasAccess === false) {
-    return (
-      <div>
-        {" "}
-        <p style={{ color: "grey", fontSize: "40px" }}>
-          {" "}
-          You dont have access to this content
-        </p>{" "}
-      </div>
-    );
-  }
-
-  const fileData = {
-    contributors: { username: "Edit", username2: "Owner" },
-    repoName: params.Repo,
-    fileName: "test file 1",
-    fileID: params.File,
-    createdOnDate: "june 1st 2024",
-    fileContent: "helloooo",
-  };
-
-  const [fileState, setState] = useState(fileData);
 
   
 
-  return (
+  
+
+
+  
+
+  return (access.checkedAccess === false ?
+     <div> </div>
+    : (access.hasAccess === false ?
+      <div>
+      {" "}
+      <p style={{ color: "grey", fontSize: "40px" }}>
+        {" "}
+        You dont have access to this content
+      </p>{" "}
+    </div> 
+    :
     <div className="mainDiv">
       <div>
         <div
@@ -91,7 +100,7 @@ function FilePage(props) {
             </p>
           </div>
           <div className="fileContent">
-            <p style={{ color: "white" }}>{fileData.fileContent}</p>
+            <p style={{ color: "white" }}>{fileState.fileContent}</p>
           </div>
         </div>
       </div>
@@ -101,7 +110,12 @@ function FilePage(props) {
         </ContributorTable>
       </div>
     </div>
+    )
   );
 }
 
 export default FilePage;
+
+
+
+   

@@ -14,7 +14,6 @@ function App() {
 
   const [isVerified, setStatus] = useState(sessionStorage.getItem('isVerified') || 0);
 
-
   async function verify(formValue){
     console.log('verify called');
     console.log(formValue);
@@ -64,7 +63,7 @@ function App() {
             <Route path="/" element={isVerified != 0 ? <Home />:<Login verifyFn={verify} signupFn = {signup} />}/>
             <Route path="/UsersList" element={<UsersList/>}/>
             <Route path="/:User/:Repo" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} signupFn = {signup} />}/>
-            <Route path = "/:User/:Repo/:File" element = {isVerified != 0 ? <FilePage/>: <Login verifyFn={verify} signupFn = {signup} />}> </Route>
+            <Route path = "/:User/:Repo/:FileID" element = {isVerified != 0 ? <FilePage/>: <Login verifyFn={verify} signupFn = {signup} />}> </Route>
             <Route path = "/testSQL" element = {<TesterPage></TesterPage>}> </Route>
       </Routes>
       </div>
