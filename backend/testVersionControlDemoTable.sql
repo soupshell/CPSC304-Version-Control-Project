@@ -536,3 +536,5 @@ INSERT INTO Issues(id,description,dateResolved,repoID) VALUES
 	(5, 'npm is not working', null, 3);
 	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (3, 5);
 	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (4, 5);
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
+	(6, 3, 5, 'STOP SPAMMING ISSUES', TO_DATE('2024/07/18 14:02:44', 'yyyy/mm/dd hh24:mi:ss'));
