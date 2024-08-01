@@ -72,10 +72,29 @@ from Users2 u2, UserContributesTo u_r, Repo r
 where u2.username = 'givenUsername'
 and u_r.userid = u2.id
 and u_r.repoid = r.id
-
 ;
 
---create Repository button
+---------------------------
+-- Create Repository button
+-- 1. Create Repo
+	INSERT INTO Repo(id,name,dateCreated) VALUES 
+		((select max(id)+1 from Repo), 'reponame', current_date);
+-- 2. Create Owner Permissions
+	INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (1, (select max(id) from Repo), 2);
+-- 3. Create initial branch
+	INSERT INTO Branch(repoid,name,createdOn) VALUES
+		((select max(id) from Repo), 'main', current_date);
+-- 4. Create initial Folder
+-- 	4a. Create initial empty Blob
+	INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		((select max(id)+1 from Files), '/', current_date, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+		INSERT INTO Folders(id, numberOfFiles) VALUES ((select max(id) from Files), 0);
+-- 5. Create initial Commit with folder
+	INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+		((select max(id)+1 from Commits), current_date, 'Initial Commit', (select max(id) from Repo), 'main', 1);
+	INSERT INTO CommitsAndFolders (folderId, commitId) VALUES ((select max(id) from Files), (select max(id) from Commits));
+--	
+
 
 
 --------------------------
