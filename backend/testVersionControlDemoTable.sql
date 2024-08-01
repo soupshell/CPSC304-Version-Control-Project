@@ -279,19 +279,19 @@ INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (2, 3, 4);
 INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (4, 3, 4);
 
 -- User Adds Issues to Repo
-INSERT INTO Issues(id,descriptions,dateResolved,repoID) VALUES 
+INSERT INTO Issues(id,description,dateResolved,repoID) VALUES 
 	(1, 'repo is empty', TO_DATE('2024/07/10', 'yyyy/mm/dd'), 3);
 
 -- User makes comments on Repo
-INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
 	(1, 3, 1, 'Will be adding new file soon', TO_DATE('2024/07/10 14:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
 	(2, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:04:13', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
 	(3, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:04:53', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
 	(4, 2, 1, 'bah bah bah, I am a sheep.', TO_DATE('2024/07/10 21:05:21', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Issues(id,userid,issueId,message,timePosted) VALUES 
+INSERT INTO Comments(id,userid,issueId,message,timePosted) VALUES 
 	(5, 4, 1, 'Please ensure you are not commenting randomly on issues. As there is no further action, I will be closing this ticket. -Cat',
 	 TO_DATE('2024/07/10 21:06:13', 'yyyy/mm/dd hh24:mi:ss'));
 
@@ -479,3 +479,59 @@ INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALU
 	(10, TO_DATE('2024/07/13 09:26:00', 'yyyy/mm/dd hh24:mi:ss'), 'Initialized Branch', 3, 'init-react-app', 3);
 INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (3,10);
 
+
+-- CREATE DEMO REPO 4
+-- 1. Create Repo
+	INSERT INTO Repo(id,name,dateCreated) VALUES 
+		(4, 'cat_repository', TO_DATE('2024/07/14', 'yyyy/mm/dd'));
+-- 2. Create Owner Permissions
+	INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (4, 4, 2);
+-- 3. Create initial branch
+	INSERT INTO Branch(repoid,name,createdOn) VALUES
+		(4, 'main', TO_DATE('2024/07/14', 'yyyy/mm/dd'));
+-- 4. Create initial Folder
+-- 	4a. Create initial empty Blob
+	INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(13, '/', TO_DATE('2024/07/14', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+		INSERT INTO Folders(id, numberOfFiles) VALUES (13, 0);
+-- 5. Create initial Commit with folder
+	INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+		(11, TO_DATE('2024/07/14 08:32:21', 'yyyy/mm/dd hh24:mi:ss'), 'Initial Commit', 4, 'main', 4);
+	INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (13, 11);
+
+
+-- CREATE DEMO REPO 5
+-- 1. Create Repo
+	INSERT INTO Repo(id,name,dateCreated) VALUES 
+		(5, 'cat_repository2', TO_DATE('2024/07/15', 'yyyy/mm/dd'));
+-- 2. Create Owner Permissions
+	INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (5, 5, 2);
+-- 3. Create initial branch
+	INSERT INTO Branch(repoid,name,createdOn) VALUES
+		(5, 'main', TO_DATE('2024/07/15', 'yyyy/mm/dd'));
+-- 4. Create initial Folder
+-- 	4a. Create initial empty Blob
+	INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+		(14, '/', TO_DATE('2024/07/15', 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+		INSERT INTO Folders(id, numberOfFiles) VALUES (14, 0);
+-- 5. Create initial Commit with folder
+	INSERT INTO Commits(id,dateCreated,message,repoid,branchName,creatorUserID) VALUES 
+		(12, TO_DATE('2024/07/15 10:02:12', 'yyyy/mm/dd hh24:mi:ss'), 'Initial Commit', 5, 'main', 5);
+	INSERT INTO CommitsAndFolders (folderId, commitId) VALUES (14, 12);
+
+
+-- Inserting tuples for Issues and IssuesAssignedTo
+INSERT INTO Issues(id,description,dateResolved,repoID) VALUES 
+	(2, 'test issue', TO_DATE('2024/07/15', 'yyyy/mm/dd'), 1);
+INSERT INTO Issues(id,description,dateResolved,repoID) VALUES 
+	(3, 'react packages out of date', null, 3);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (3, 3);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (2, 3);
+INSERT INTO Issues(id,description,dateResolved,repoID) VALUES 
+	(4, 'yarn install stopped working', null, 3);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (2, 4);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (4, 4);
+INSERT INTO Issues(id,description,dateResolved,repoID) VALUES 
+	(5, 'npm is not working', null, 3);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (3, 5);
+	INSERT INTO IssuesAssignedTo(userid,issueid) VALUES (4, 5);
