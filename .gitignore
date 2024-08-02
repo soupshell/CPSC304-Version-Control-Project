@@ -11,3 +11,4 @@ Dockerfile
 /backend/node_modules
 /backend/.env
 /backend/local-start.cmd
+/backend/remote-start.sh

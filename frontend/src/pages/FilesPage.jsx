@@ -34,15 +34,26 @@ function FilePage(props) {
         const auth = await getFileContent(loggedInUser, currentUserPassword, repoName, fileID);
         const access = auth.validLogin;
         const fileInfo = auth.queryResult;
+        console.log(fileInfo);
         setAccess({checkedAccess: true, hasAccess: Boolean(access)});
+        
+        if(access && fileContent){
+
+        const fileContent = fileInfo.rows[0][0];
+        const path = fileInfo.rows[0][1];
+        const date = fileInfo.rows[0][2];
+
+        console.log(fileContent,path,date);
+
         setFileData({
             contributors: { username1: "Edit", username2: "Owner" },
             repoName: params.Repo,
-            fileName: "test file 1",
+            fileName: path,
             fileID: params.File,
-            createdOnDate: "june 1st 2024",
-            fileContent: "",
+            createdOnDate: date,
+            fileContent: fileContent,
           });
+        }
       } catch (e) {
         console.log(e);
       }
@@ -50,13 +61,6 @@ function FilePage(props) {
 
     check();
   }, []);
-
-  
-
-  
-
-
-  
 
   return (access.checkedAccess === false ?
      <div> </div>
