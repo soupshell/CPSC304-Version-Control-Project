@@ -74,7 +74,7 @@ async function checkLogin(req, res) {
             SELECT Count(*)
             FROM Users1 u1
             WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)
-           AND u1.hashPassword = :password `, { username: username, password: password });
+            AND u1.hashPassword = :password `, { username: username, password: password });
            
            res.json({validLogin: result.rows[0][0]});
       });
