@@ -54,12 +54,12 @@ from Repo;
 SELECT u2.username
 FROM Users2 u2
 WHERE NOT EXISTS
-((SELECT u_r1.repoid
-FROM UserContributesTo u_r1)
-minus
-(SELECT u_r2.repoid
-FROM UserContributesTo u_r2
-WHERE u2.id = u_r2.userid));
+   ((SELECT 3
+   FROM UserContributesTo u_r1)
+   minus
+   (SELECT u_r2.repoid
+   FROM UserContributesTo u_r2
+   WHERE u2.id = u_r2.userid));
 
 
 --------------------------
@@ -101,10 +101,15 @@ and u_r.repoid = r.id
 -- Render RepoPage
 -- GIVEN USERNAME
 -- get latest commit from branch name
--- starting with 'main'
+-- starting with 'main', given repoid 
 --  select to_char(datecreated, 'MM/DD/YY HH:MI:SS A.M.') from commits;
+select * from (select * from commits where repoid = 1 and branchname = 'main' order by dateCreated desc) where rownum = 1;
 
 -- given a commit, select the starting folder- non recursive for now
+select * from folders f
+where id = (select folderId
+   from CommitsAndFolder
+   where commitId = 1);
 
 -- get contributors
 
