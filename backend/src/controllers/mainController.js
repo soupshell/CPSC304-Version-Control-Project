@@ -120,4 +120,52 @@ async function addUserToDB(req, res) {
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo };
+async function addUserToRepo(req, res) {
+   try {
+      const repoName = req.body.repoName;
+      const username = req.body.username;
+
+      console.log(repoName, username);
+
+      if (!repoName || !username) {
+         res.status(400).send("repo empty");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        var_date DATE;
+        var_repoID INTEGER;
+        var_branchID INTEGER;
+        var_commitID INTEGER;
+        var_userID INTEGER;
+        var_folderID INTEGER;
+      BEGIN
+        SELECT id INTO var_userID FROM Users2 WHERE username = :username;
+        SELECT CURRENT_DATE INTO var_date FROM DUAL;
+        SELECT COUNT(id) + 1 INTO var_repoID FROM Repo;
+        SELECT COUNT(id) + 1 INTO var_commitID FROM Commits;
+        SELECT COUNT(id) + 1 INTO var_folderID FROM Folders;
+        INSERT INTO Repo(id, name, dateCreated) 
+        VALUES (var_repoID, :repoName, TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Branch(repoid, name, createdOn)
+        VALUES (var_repoID, 'main', TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Commits (id, dateCreated, message, repoid, branchname, creatorUserID)
+        VALUES (var_commitID, TO_DATE(var_date, 'yyyy/mm/dd'), 'initial commit', var_repoID, 'main', var_userID);
+        INSERT INTO CommitsAndFolders (folderId, commitId)
+        VALUES (var_folderID, var_commitID);
+        INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (var_userID, var_repoID, 2);
+        COMMIT;
+      END;
+            `, {repoName: repoName, username: username});
+
+            console.log(result);
+            res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, addUserToRepo};
