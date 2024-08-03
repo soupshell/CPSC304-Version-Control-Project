@@ -138,10 +138,66 @@ async function getFileContent(username, password, repoName, fileID) {
 }
 
 
+async function createRepo(repoName, username) {
+  var request = reqPath.concat("createRepo");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ repoName: repoName,
+        username: username
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function getRepos(username, password) {
+  var request = reqPath.concat("getRepos");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
 
 
 
 
 
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent};
+
+
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos};

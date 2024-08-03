@@ -120,4 +120,100 @@ async function addUserToDB(req, res) {
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo };
+async function addUserToRepo(req, res) {
+   try {
+      const repoName = req.body.repoName;
+      const username = req.body.username;
+
+      console.log(repoName, username);
+
+      if (!repoName || !username) {
+         res.status(400).send("repo empty");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        var_date DATE;
+        var_repoID INTEGER;
+        var_branchID INTEGER;
+        var_commitID INTEGER;
+        var_userID INTEGER;
+        var_folderID INTEGER;
+      BEGIN
+        SELECT id INTO var_userID FROM Users2 WHERE username = :username;
+        SELECT CURRENT_DATE INTO var_date FROM DUAL;
+        SELECT COUNT(id) + 1 INTO var_repoID FROM Repo;
+        SELECT COUNT(id) + 1 INTO var_commitID FROM Commits;
+        SELECT COUNT(id) + 1 INTO var_folderID FROM Folders;
+        INSERT INTO Repo(id, name, dateCreated) 
+        VALUES (var_repoID, :repoName, TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Branch(repoid, name, createdOn)
+        VALUES (var_repoID, 'main', TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Commits (id, dateCreated, message, repoid, branchname, creatorUserID)
+        VALUES (var_commitID, TO_DATE(var_date, 'yyyy/mm/dd'), 'initial commit', var_repoID, 'main', var_userID);
+        INSERT INTO CommitsAndFolders (folderId, commitId)
+        VALUES (var_folderID, var_commitID);
+        INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (var_userID, var_repoID, 2);
+        COMMIT;
+      END;
+            `, {repoName: repoName, username: username});
+
+            console.log(result);
+            res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+
+async function getRepos(req, res) {
+   try {
+      const username = req.body.username;
+      const password = req.body.password;
+
+      console.log(username, password);
+
+      if (!username || !password) {
+         res.status(400).send("something went wrong");
+      }
+     
+
+      // feel free to make this better lol
+      await oracle.withOracleDB(async (connection) => {
+         // u1 is owner, u2 is current user
+         const result = await connection.execute(`
+SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
+      from Users2 u1, UserContributesTo u_r, Repo r, Users2 u2, Permissions p, UserContributesTo u_r2, 
+      Permissions p2, Branch b, Commits c
+      where u_r.userid = u1.id
+      and u_r.repoid = r.id
+      and u_r.userid = u1.id
+      and p.permissions = u_r.permissions
+      and p.isOwner = 1
+      and u_r2.userid = u2.id
+      and u_r2.repoid = r.id
+      and p2.permissions = u_r2.permissions
+      and b.repoid = r.id
+      and c.repoid = r.id
+      and c.branchname = b.name
+      and c.dateCreated IN (SELECT max(dateCreated) 
+                            FROM (Select *
+                            From commits
+                            WHERE repoid = r.id
+                           ))
+      and u2.username =  :username
+ `, {username: username});
+
+            console.log(result);
+            res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, addUserToRepo, getRepos};

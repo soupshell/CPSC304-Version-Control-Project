@@ -15,9 +15,9 @@ function RepoLinkBox(props) {
      <Link to={'/' + repo['owner'] + '/' + repo['name']}>
       <div className='ctgrey-button'>
          <p>{repo['name']}</p>
-         <p>{repo['owner']}</p>
-         <p> The last commit was on branch {repo['latestCommitBranch']}, {repo['latestCommitTime']} </p>
-         <p>{repo['userPerm']}</p>
+         <p>{"Owner: " + repo['owner']}</p>
+         <p> The last commit was on branch {repo['latestCommitBranch']}, {"at " + repo['latestCommitTime']} </p>
+         <p>{"Permissions:" + repo['userPerm']}</p>
       </div>
      </Link>
    );

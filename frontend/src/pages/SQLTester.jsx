@@ -4,9 +4,11 @@ import { queryDB } from "../controller/controller";
 function TesterPage(props) {
   const [testInput, setTestInput] = useState(` 
 SELECT * 
-FROM Repo r, UserContributesTo ru, Users2 u
+FROM Repo r, UserContributesTo ru, Users2 u2, Users1 u1
 WHERE r.id = ru.repoid 
-AND ru.userid = u.id
+AND ru.userid = u2.id
+AND u2.email = u1.email
+    
     `);
 
   const [queryResult, setQueryResult] = useState([]);

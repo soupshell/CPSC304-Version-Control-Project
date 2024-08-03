@@ -4,6 +4,7 @@ import { useState } from "react";
 import ContributorTable from "../components/ContributorTable";
 import { useParams, Link } from "react-router-dom";
 import {userLogin, queryDB, getFileContent } from "../controller/controller";
+import NoAccessPage from "../components/NoAccessPage"
 
 const fileContent = "hello";
 
@@ -65,13 +66,7 @@ function FilePage(props) {
   return (access.checkedAccess === false ?
      <div> </div>
     : (access.hasAccess === false ?
-      <div>
-      {" "}
-      <p style={{ color: "grey", fontSize: "40px" }}>
-        {" "}
-        You dont have access to this content
-      </p>{" "}
-    </div> 
+      <NoAccessPage> </NoAccessPage>
     :
     <div className="mainDiv">
       <div>
