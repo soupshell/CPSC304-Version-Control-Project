@@ -165,6 +165,33 @@ async function createRepo(repoName, username) {
   }
 }
 
+async function getRepos(username, password) {
+  var request = reqPath.concat("getRepos");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
 
 
@@ -172,4 +199,5 @@ async function createRepo(repoName, username) {
 
 
 
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo};
+
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos};

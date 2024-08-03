@@ -168,4 +168,52 @@ async function addUserToRepo(req, res) {
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, addUserToRepo};
+
+async function getRepos(req, res) {
+   try {
+      const username = req.body.username;
+      const password = req.body.password;
+
+      console.log(username, password);
+
+      if (!username || !password) {
+         res.status(400).send("something went wrong");
+      }
+     
+
+      // feel free to make this better lol
+      await oracle.withOracleDB(async (connection) => {
+         // u1 is owner, u2 is current user
+         const result = await connection.execute(`
+SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
+      from Users2 u1, UserContributesTo u_r, Repo r, Users2 u2, Permissions p, UserContributesTo u_r2, 
+      Permissions p2, Branch b, Commits c
+      where u_r.userid = u1.id
+      and u_r.repoid = r.id
+      and u_r.userid = u1.id
+      and p.permissions = u_r.permissions
+      and p.isOwner = 1
+      and u_r2.userid = u2.id
+      and u_r2.repoid = r.id
+      and p2.permissions = u_r2.permissions
+      and b.repoid = r.id
+      and c.repoid = r.id
+      and c.branchname = b.name
+      and c.dateCreated IN (SELECT max(dateCreated) 
+                            FROM (Select *
+                            From commits
+                            WHERE repoid = r.id
+                           ))
+      and u2.username =  :username
+ `, {username: username});
+
+            console.log(result);
+            res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, addUserToRepo, getRepos};

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import HomeHeader from '../components/HomeHeader'
 import RepoLinkBox from '../components/RepoLinkBox'
 import Modal from 'react-modal';
-import { createRepo } from '../controller/controller';
+import { createRepo, getRepos } from '../controller/controller';
+import { useEffect } from 'react';
 
 function Home(props) {
 
@@ -10,6 +11,8 @@ function Home(props) {
  const [formValues, setFormValues] = useState({});
  const title = "Create a repo :";
  const loggedInUser = sessionStorage.getItem("isVerified");
+ const currentUserPassword = sessionStorage.getItem("password");
+ const [repos, setRepos] = useState([]);
  
 
  const handleChange = (e) => {
@@ -19,28 +22,34 @@ function Home(props) {
   e.preventDefault();
  }
 
-  const repos = [
-    {'id': 1,
-    'name': 'math-repo',
-    'owner': 'owner-username',
-    'latestCommitBranch': 'branchname',
-    'latestCommitTime': '2024-07-07',
-    'userPerm': 'Edit'
-    },
-    {'id': 2,
-      'name': 'testrepo',
-      'owner': 'owner-username',
-      'latestCommitBranch': 'branchname',
-      'latestCommitTime': '2024-07-21',
-      'userPerm': 'Edit'
-    }
-  ];
+ 
 
 
   useEffect(() => {
     async function check() {
       try {
-        // to do get all users repo's
+        const result = await getRepos(loggedInUser,currentUserPassword);
+        if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
+          const repos = []
+           result.queryResult.rows.forEach((row) => {
+           const id = row[0];
+           const  name = row[1];
+           const owner =  row[2];
+           const userPerm = row[3];
+           const latestCommitBranch = row[4];
+           const date = row[5];
+
+           repos.push({'id': id,
+            'name': name,
+            'owner': owner,
+            'latestCommitBranch': latestCommitBranch,
+            'latestCommitTime': date,
+            'userPerm': userPerm
+          })
+        });
+          setRepos(repos);
+          console.log(result.queryResult);
+        }
       } catch (e) {
         console.log(e);
       }
