@@ -3,7 +3,14 @@ const router = express.Router();
 
 const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos} = require("../controllers/mainController");
 const {getFileContents, getFilesAndFolders, getRootFolderID} = require("../controllers/fileController");
+const {testReactConnection} = require("../controllers/reactController");
 
+
+
+// router.get("/api", testReactConnection)
+router.get("/api", (req, res) => {
+   res.send({ "message": "Hello from server!", "status": "success!"});
+ });
 router.get("/testConnection", testOracle);
 router.post("/testSQL", executeSQL);
 router.post("/login",checkLogin);

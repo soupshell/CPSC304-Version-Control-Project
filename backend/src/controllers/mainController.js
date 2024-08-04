@@ -6,7 +6,7 @@ async function testOracle(req, res) {
    try {
       const result = await oracle.testOracleConnection();
       if (result) {
-         return res.send("success");
+         return res.status(200).send("success");
       } else {
          return
       }
