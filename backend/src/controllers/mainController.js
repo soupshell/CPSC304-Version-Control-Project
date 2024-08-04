@@ -76,7 +76,7 @@ async function checkLogin(req, res) {
             WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)
             AND u1.hashPassword = :password `, { username: username, password: password });
            
-           res.json({validLogin: result.rows[0][0]});
+         return res.json({validLogin: result.rows[0][0]});
       });
    } catch (e) {
       res.status(400).send(e.error);
