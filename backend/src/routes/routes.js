@@ -7,10 +7,7 @@ const {testReactConnection} = require("../controllers/reactController");
 
 
 
-// router.get("/api", testReactConnection)
-router.get("/api", (req, res) => {
-   res.send({ "message": "Hello from server!", "status": "success!"});
- });
+router.get("/api", testReactConnection)
 router.get("/testConnection", testOracle);
 router.post("/testSQL", executeSQL);
 router.post("/login",checkLogin);
