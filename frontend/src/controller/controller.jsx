@@ -194,10 +194,71 @@ async function getRepos(username, password) {
 }
 
 
+async function getFilesAndFolders(username, password, repoName, branchName, currentFolderID) {
+  var request = reqPath.concat("getFilesAndFolders");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        repoName: repoName,
+        branchName: branchName,
+        currentFolderID: currentFolderID
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
+async function getRootFolderID(username, password, repoName, branchName) {
+  var request = reqPath.concat("getRootFolderID");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        repoName: repoName,
+        branchName: branchName,
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
 
 
 
 
 
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos};
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID};

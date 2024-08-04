@@ -120,7 +120,7 @@ async function addUserToDB(req, res) {
 }
 
 
-async function addUserToRepo(req, res) {
+async function createRepo(req, res) {
    try {
       const repoName = req.body.repoName;
       const username = req.body.username;
@@ -143,15 +143,19 @@ async function addUserToRepo(req, res) {
       BEGIN
         SELECT id INTO var_userID FROM Users2 WHERE username = :username;
         SELECT CURRENT_DATE INTO var_date FROM DUAL;
-        SELECT COUNT(id) + 1 INTO var_repoID FROM Repo;
-        SELECT COUNT(id) + 1 INTO var_commitID FROM Commits;
-        SELECT COUNT(id) + 1 INTO var_folderID FROM Folders;
+        SELECT MAX(id) + 1 INTO var_repoID FROM Repo;
+        SELECT MAX(id) + 1 INTO var_commitID FROM Commits;
+        SELECT MAX(id) + 1 INTO var_folderID FROM Files;
         INSERT INTO Repo(id, name, dateCreated) 
         VALUES (var_repoID, :repoName, TO_DATE(var_date, 'yyyy/mm/dd'));
         INSERT INTO Branch(repoid, name, createdOn)
         VALUES (var_repoID, 'main', TO_DATE(var_date, 'yyyy/mm/dd'));
         INSERT INTO Commits (id, dateCreated, message, repoid, branchname, creatorUserID)
         VALUES (var_commitID, TO_DATE(var_date, 'yyyy/mm/dd'), 'initial commit', var_repoID, 'main', var_userID);
+        INSERT INTO Files(id, path, createdOn, blobHash) 
+        VALUES  (var_folderID, '/', var_date, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+	     INSERT INTO Folders(id, numberOfFiles) 
+        VALUES (var_folderID, 0);
         INSERT INTO CommitsAndFolders (folderId, commitId)
         VALUES (var_folderID, var_commitID);
         INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (var_userID, var_repoID, 2);
@@ -216,4 +220,4 @@ SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, addUserToRepo, getRepos};
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos};

@@ -1,29 +1,74 @@
 import RepoHeader from "../components/RepoHeader";
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getFilesAndFolders, getRootFolderID } from "../controller/controller";
 
 function RepoHome(props) {
   const params = useParams(); // access params.id
   //TODO THIS IS THE EXAMPLE REPODATA- should be async query in live
+  const loggedInUser = sessionStorage.getItem("isVerified");
+  const currentUserPassword = sessionStorage.getItem("password");
+ 
+  const [repoState, setRepoState] = useState(
+    {
+      id: "",
+      repoName: params.Repo,
+      currBranchName: "main",
+      currCommitId:  "",
+      currFolderPath: "/",
+      folders: [],
+      files: [],
+      contributors: {username: "Edit", username2: "Owner" },
+    }
+  );
 
   
-  const repoData = {
-    id: 1,
-    repoName: "testRepoName",
-    currBranchName: "branchName",
-    currCommitId: "123",
-    currFolderPath: "/",
-    folders: [{ filepath: "/folder1", fileId: "12" }],
-    files: [
-      { filepath: "/file1.txt", fileId: "3" },
-      { filepath: "/file2.cpp", fileId: "3" },
-    ],
-    contributors: {username: "Edit", username2: "Owner" },
-  };
 
-  const [repoState, setState] = useState(repoData);
+  useEffect(() => {
+    async function check() {
+     try{
+    const auth = await getRootFolderID(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName);
 
-  if (!repoData) {
+
+    if(auth === false) {
+      console.log(auth);
+      setRepoState(null);
+      return;
+    }
+
+    const folderID = auth.queryResult.rows[0][0];
+    const commitId = auth.queryResult.rows[0][1];
+    const result = await getFilesAndFolders(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName, folderID);
+
+    const files = result.queryResult.rows;
+
+    console.log("files", files);
+    
+    setRepoState({
+      id: folderID,
+      repoName: params.Repo,
+      currBranchName: repoState.currBranchName,
+      currCommitId:  commitId,
+      currFolderPath: repoState.currFolderPath,
+      folders: [],
+      files: files,
+      contributors: repoState.contributors,
+    });
+
+
+      console.log(result);
+     } catch(e){
+      setRepoState(null);
+      console.log(e);
+     }
+    }
+
+    check();
+  }, []);
+
+
+
+  if (!repoState) {
     return (
       <>
         <h1>
@@ -60,9 +105,9 @@ function RepoHome(props) {
       <div className="centerDiv">
         <ul className='centerColDiv'>
           Folders and files
-          {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder['filepath']}</button></li>)}
-          {repoState["files"].map(file => <li className='ctgrey-li'><Link to={file['fileId']}>
-                                          {file['filepath']}</Link></li>)}
+          {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder[1]}</button></li>)}
+          {repoState["files"].map(file => <li className='ctgrey-li'><Link to={String(file[0])}>
+                                          {String(file[1])}</Link></li>)}
         </ul>
         <div >
           <table border="1">

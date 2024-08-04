@@ -6,7 +6,7 @@ var cors = require("cors");
 const rootPath = "./"
 require('dotenv').config({path : path.join(rootPath,".env")});
 const router = require('./src/routes/routes.js');
-const { testFunction } = require("./src/controllers/mainController.js");
+
 
 app.use(cors());
 app.use(express.json());
