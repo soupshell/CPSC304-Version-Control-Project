@@ -22,7 +22,7 @@ function App() {
   // }, []);
 
   useEffect(() => {
-    const res = fetch('http://localhost:59000/checkLogin', {
+    const res = fetch('http://localhost:59000/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -30,10 +30,10 @@ function App() {
       },
       body: JSON.stringify({
         username: 'test_account',
-        password: '1234',
+        password: '12345678910',
       })
-    }).then(response => {console.log(response)});
-    // .then(data => console.log( data));
+    }).then(response => response.json())
+    .then(data => console.log( data));
 
   }, []);
 
