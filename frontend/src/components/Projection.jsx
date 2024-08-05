@@ -1,20 +1,29 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
+import {postProjectionReq} from "../controller/controller";
+
 
 function Projection(props) {
-  const [selectedIds, setSelectedIds] = useState([]);
-   const handleCheckboxChange = (event) => {
+  const [selectedIds, setSelectedIds] = useState(["email", "id", "username", "datejoined" ]);
+  const [projectionData, setProjectionData] = useState([]);
+  const handleCheckboxChange = (event) => {
       const checkedId = event.target.value;
       if(event.target.checked){
          setSelectedIds([...selectedIds,checkedId])
       }else{
          setSelectedIds(selectedIds.filter(id=>id !== checkedId))
       }
-   }
+  }
    
-   const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(selectedIds);
-   }
+      console.log('HANDEL SUBMIT CALLEd');
+      const res = await postProjectionReq(selectedIds);
+      if(res === false) {
+        setProjectionData([]);
+        return;
+      }
+      setProjectionData(res.rows);
+  }
 
 
    return (
@@ -26,25 +35,25 @@ function Projection(props) {
                 <tr>
                     <th>
                       <label key={0}>
-                      <input type="checkbox" value='id' onChange={(e) => handleCheckboxChange(e)}/>
+                      <input type="checkbox" value='id' onChange={(e) => handleCheckboxChange(e)} checked={selectedIds.includes('id')}/>
                       ID
                       </label>
                     </th>
                     <th>
                       <label key={1}>
-                      <input type="checkbox" value='username' onChange={(e) => handleCheckboxChange(e)}/>
+                      <input type="checkbox" value='username' onChange={(e) => handleCheckboxChange(e)} checked={selectedIds.includes('username')}/>
                       username
                       </label>
                     </th>
                     <th>
                       <label key={2}>
-                      <input type="checkbox" value='datejoined' onChange={(e) => handleCheckboxChange(e)}/>
+                      <input type="checkbox" value='datejoined' onChange={(e) => handleCheckboxChange(e)} checked={selectedIds.includes('datejoined')}/>
                       dateJoined
                       </label>
                     </th>
                     <th>
                     <label key={3}>
-                    <input type="checkbox" value='email'  onChange={(e) => handleCheckboxChange(e)}/>
+                    <input type="checkbox" value='email'  onChange={(e) => handleCheckboxChange(e)} checked={selectedIds.includes('email')}/>
                     email
                     </label>
                     </th>

@@ -255,7 +255,7 @@ async function getRootFolderID(username, password, repoName, branchName) {
   }
 }
 
-//for division
+//for divisionGet
 async function getUniversalRepos() {
   var request = reqPath.concat("divisionGet");
   try {
@@ -275,9 +275,35 @@ async function getUniversalRepos() {
   }
 }
 
+async function postProjectionReq(selectedIds) {
+  var request = reqPath.concat("projection");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'selectedIds': selectedIds})
+    });
+
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 
 
 
 export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID,
-        getUniversalRepos
+        getUniversalRepos, postProjectionReq
 };

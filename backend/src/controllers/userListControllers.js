@@ -19,5 +19,25 @@ async function divisionGet(req, res) {
    }
 }
 
+async function projectionPost(req, res) {
+   try {
+      const ids = req.body.selectedIds;
 
-module.exports = { testReactConnection, divisionGet};
+      if (ids.length === 0) {
+         return {};
+      } 
+
+      const columns_string = ids.join(', ');
+      const query = 'SELECT ' + columns_string + ' from Users2';
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(query);
+         
+         return res.json(result);
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+module.exports = { testReactConnection, divisionGet, projectionPost};
