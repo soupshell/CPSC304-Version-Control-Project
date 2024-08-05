@@ -5,25 +5,9 @@ import { getFilesAndFolders, getRootFolderID } from "../controller/controller";
 
 function RepoHome(props) {
   const params = useParams(); // access params.id
-  //TODO THIS IS THE EXAMPLE REPODATA- should be async query in live
   const loggedInUser = sessionStorage.getItem("isVerified");
   const currentUserPassword = sessionStorage.getItem("password");
  
-  const [repoState, setRepoState] = useState(
-    {
-      id: "",
-      repoName: params.Repo,
-      currBranchName: "main",
-      currCommitId:  "",
-      currFolderPath: "/",
-      folders: [],
-      files: [],
-      contributors: {username: "Edit", username2: "Owner" },
-    }
-  );
-
-  
-
   useEffect(() => {
     async function check() {
      try{
