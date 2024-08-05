@@ -10,8 +10,6 @@ import TesterPage from "./pages/SQLTester.jsx";
 import {userLogin, userSignup} from "./controller/controller.jsx"
 
 function App() {
-  const users = {'testuser': '1234'};
-
   const [isVerified, setStatus] = useState(sessionStorage.getItem('isVerified') || 0);
 
   //GET REQUEST
