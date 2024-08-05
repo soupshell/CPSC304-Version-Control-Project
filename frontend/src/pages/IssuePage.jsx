@@ -100,6 +100,14 @@ function IssuePage(props) {
       }
     }
 
+    async function markResolved() {
+      //
+    }
+
+    async function markUnresolved() {
+      //
+    }
+
     useEffect(() => {
       fetchComments();
       fetchIssue();
@@ -114,6 +122,40 @@ function IssuePage(props) {
         <div>{comment.message}</div>
     </li>);
 
+    if (issuedate == null) {
+      return (
+        <>
+        <RepoHeader />
+        <div>
+        <div className="centerDiv">
+          <h2>
+            Repo <i>{repoState["repoName"]}</i>'s Issues Page
+          </h2>
+        </div>
+        <div className="centerDiv">
+          <div >
+            <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
+            <Button onClick={async (e) => { 
+              const res = await setResolved(new Date().toLocaleTimeString, issueid);
+              await fetchIssue();
+            }}>Mark Resolved</Button>
+            <Button>Delete this issue</Button>
+            <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
+          </div>
+          <ul className='centerColDiv'>
+            {issuedate}
+            {issuedesc}
+          </ul>
+          <ul className='centerColDiv'>
+            {listItems}
+          </ul>
+          
+        </div>
+        </div>
+        </>
+      );
+    }
+
 
     return (
         <>
@@ -127,7 +169,10 @@ function IssuePage(props) {
         <div className="centerDiv">
           <div >
             <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-            <Button>Mark Resolved</Button>
+            <Button onClick={async (e) => { 
+              const res = await setResolved(null, issueid);
+              await fetchIssue();
+            }}>Mark Unresolved</Button>
             <Button>Delete this issue</Button>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>

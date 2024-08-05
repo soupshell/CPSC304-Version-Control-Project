@@ -439,6 +439,28 @@ async function getIssue(req, res) {
    }
 }
 
+async function setResolved(req, res) {
+   try {
+
+      const date = req.body.date;
+      const issueid = req.body.issueid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            UPDATE Issues
+            set dateResolved = :date
+            where i.id = :issueid
+            COMMIT;`, {date: date, issueid: issueid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
 
 
 module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue};
