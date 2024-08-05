@@ -76,7 +76,7 @@ async function checkLogin(req, res) {
             WHERE u1.email IN (SELECT email FROM Users2 u2 WHERE u2.username =  :username)
             AND u1.hashPassword = :password `, { username: username, password: password });
            
-           res.json({validLogin: result.rows[0][0]});
+         return res.json({validLogin: result.rows[0][0]});
       });
    } catch (e) {
       res.status(400).send(e.error);
@@ -89,11 +89,10 @@ async function addUserToDB(req, res) {
       const username = req.body.username;
       const password = req.body.password;
       const email = req.body.email;
-
       console.log(username, password, email);
 
       if (username === null || password === null || email === null) {
-         res.status(400).send("empty username, password or email");
+         res.sendStatus(400).send("empty username, password or email");
       }
 
       await oracle.withOracleDB(async (connection) => {
@@ -103,7 +102,7 @@ async function addUserToDB(req, res) {
         var_date DATE;
       BEGIN
         SELECT CURRENT_DATE INTO var_date FROM DUAL;
-        SELECT COUNT(email) + 1 INTO var_count FROM Users1;
+        SELECT COUNT(*) + 1 INTO var_count FROM Users2;
         INSERT INTO Users1(email, hashPassword) VALUES (:email, :password);
         INSERT INTO Users2(id, username, dateJoined, email) 
         VALUES (var_count, :username, TO_DATE(var_date, 'yyyy/mm/dd'), :email);
@@ -115,7 +114,7 @@ async function addUserToDB(req, res) {
             res.json({ validLogin: true });
       });
    } catch (e) {
-      res.status(400).send(e.error);
+      res.sendStatus(400).send(e.error);
    }
 }
 
