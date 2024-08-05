@@ -20,4 +20,4 @@ function IssueLinkBox(props) {
    );
  }
 
-export default RepoLinkBox;
+export default IssueLinkBox;

@@ -8,6 +8,7 @@ import FilePage from './pages/FilesPage.jsx'
 import './App.css';
 import TesterPage from "./pages/SQLTester.jsx";
 import {userLogin, userSignup} from "./controller/controller.jsx"
+import Issues from "./pages/Issues.jsx";
 
 function App() {
   const [isVerified, setStatus] = useState(sessionStorage.getItem('isVerified') || 0);

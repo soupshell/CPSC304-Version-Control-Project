@@ -11,6 +11,8 @@ function Issues(props) {
 
     const {user, repo} = useParams(); // access params.id
 
+    console.log(user,repo);
+
     const [issues, setIssues] = useState([]);
 
     //pretend this is every issue from the table, and that it's been queried
