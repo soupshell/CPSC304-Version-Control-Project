@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues} = require("../controllers/mainController");
+const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, getAllContributors, addUserToRepo} = require("../controllers/mainController");
 const {getFileContents, getFilesAndFolders, getRootFolderID, createFile, createFolder} = require("../controllers/fileController");
 const {testReactConnection, divisionGet, divisionPost, projectionPost, query_AggNest, query_AggHav, query_AggNorm} = require("../controllers/userListControllers");
 
@@ -27,6 +27,8 @@ router.post("/getRootFolderID", getRootFolderID);
 router.post("/createFolder", createFolder);
 router.post("/createFile", createFile);
 router.post("/getIssues", getIssues);
+router.post("/getContributors", getAllContributors);
+router.post("/addUserToRepo", addUserToRepo);
 
 
 router.post("/projection", projectionPost);

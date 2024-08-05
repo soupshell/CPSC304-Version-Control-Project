@@ -164,13 +164,13 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
 
 
    if (!username || !password || !repoName || !branchName)  {
-      res.status(400).send("empty something");
+      return res.status(400).send("empty something");
    }
 
    console.log(username,password,repoName, branchName);
    try {
       await oracle.withOracleDB(async (connection) => {
-       const result = await connection.execute(` 
+       const access = await connection.execute(` 
        SELECT Count(*)
        FROM Users2 u2, UserContributesTo uc, Repo r, Permissions p, Users1 u1
        WHERE u2.id = uc.userid
@@ -183,8 +183,8 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
        AND r.name = :repoName
       `,{username: username, password:password, repoName: repoName});
 
-      console.log("has access ", result);
-      const hasAccess = result.rows[0][0];
+      console.log("has access ", access);
+      const hasAccess = access.rows[0][0];
 
       if(!hasAccess){
         return res.status(400).send("no access");
@@ -243,6 +243,23 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
         // make a new commit for the current branch
         // copy folder the file resides in and make a new folder with the new file in it
         // TO DO: uhhh recursively update every folder that the new file is in
+
+      const checkWritePermissions = await connection.execute(
+         `   SELECT Count(*)
+             FROM Users2 u2, Users1 u1, UserContributesTo uc, Repo r, Permissions p
+             WHERE u2.id = uc.userid
+             AND u2.email = u1.email
+             AND r.id = uc.repoid
+             AND p.permissions = uc.permissions
+             AND p.READWRITE = 'WRITE' 
+             AND u2.username = :username
+             AND u1.hashPassword = :password
+             AND r.name = :repoName
+            `, {username: username, password: password, repoName: repoName});
+
+            if(!checkWritePermissions.rows[0][0]){
+              return res.status(400).send("you dont have write permissions");
+            }
 
 
       const checkBlob = await connection.execute(
@@ -365,6 +382,26 @@ async function createFolder(req, res) {
       }
 
       await oracle.withOracleDB(async (connection) => {
+
+
+      const checkWritePermissions = await connection.execute(
+            `   SELECT Count(*)
+                FROM Users2 u2, Users1 u1, UserContributesTo uc, Repo r, Permissions p
+                WHERE u2.id = uc.userid
+                AND u2.email = u1.email
+                AND r.id = uc.repoid
+                AND p.permissions = uc.permissions
+                AND p.READWRITE = 'WRITE' 
+                AND u2.username = :username
+                AND u1.hashPassword = :password
+                AND r.name = :repoName
+               `, {username: username, password: password, repoName: repoName});
+   
+               if(!checkWritePermissions.rows[0][0]){
+                 return res.status(400).send("you dont have write permissions");
+               }
+
+
          const checkFileName = await connection.execute(`
             SELECT count (*)
             FROM Files f, FilesInFolders fif
