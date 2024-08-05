@@ -1,14 +1,34 @@
 import {useState} from 'react';
+import {postAggHavReq} from "../controller/controller";
 
 function AggHav(props) {
-  const [minRepos, setMinRepos] = useState(0);
-  //TODO handelSubmit and handleChange 
-  const handleSubmit = (e) => {
-    console.log(minRepos);
-    console.log('AGGHAV Called: ' + minRepos.toString() + ' is value of minRepos');
+  const [minRepos, setMinRepos] = useState(1);
+  const [aggHavData, setAggHavData] = useState([]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+      const res = await postAggHavReq(minRepos);
+      if(res === false) {
+        setAggHavData([]);
+        return;
+      }
+      setAggHavData(res);
   }
   const handleChange = (e) => {
-    setMinRepos(e.target.value);
+    let value = e.target.value
+    if (value < 1) {
+      value = 1
+    }
+    setMinRepos(value);
+  }
+
+  let  tableData = [];
+  for (let i=0;i<aggHavData.length; i++){
+    let row = aggHavData[i];
+    let tablerow=[];
+    for (let j =0;j < row.length; j++) {
+      tablerow.push((<td>{row[j]}</td>));
+    }
+    tableData.push((<tr>{tablerow}</tr>));
   }
 
    return (
@@ -29,6 +49,7 @@ function AggHav(props) {
                 </tr>
             </thead>
             <tbody>
+            {tableData}
             </tbody>
         </table>
       </div> 

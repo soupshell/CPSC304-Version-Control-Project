@@ -96,7 +96,7 @@ async function query_AggNest(req, res) {
 
 async function query_AggHav(req, res) {
    try {
-      const minRepos = Math.max(1, req.body.repos);
+      const minRepos = Math.max(1, req.body.minRepos);
       
       await oracle.withOracleDB(async (connection) => {
         const result = await connection.execute(`
@@ -104,7 +104,7 @@ async function query_AggHav(req, res) {
             from Users2 u2, UserContributesTo u_r 
             where u2.id = u_r.userid 
             group by u2.username 
-            having count(unique u_r.repoid) > :minRepos 
+            having count(unique u_r.repoid) >= :minRepos 
            `, {minRepos: minRepos});
 
            console.log(result);
@@ -120,9 +120,11 @@ async function query_AggNorm(req, res) {
       await oracle.withOracleDB(async (connection) => {
         const result = await connection.execute(`
             select u2.username, count(unique u_r.repoid) as "Repo Count", listagg(r.name, ', ') as "Reponames"
-            from Users2 u2, UserContributesTo u_r, Repo r
-            where u2.id = u_r.userid 
-            and u_r.repoid = r.id
+            from Users2 u2
+            left join UserContributesTo u_r
+            on u2.id = u_r.userid 
+            left join Repo r
+            on u_r.repoid = r.id
             group by u2.username
          `);
 
