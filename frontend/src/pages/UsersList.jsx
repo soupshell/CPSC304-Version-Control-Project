@@ -23,13 +23,14 @@ function UsersList(props) {
 
    return (
      <>
-       <h1>Our Users</h1>
        <div className="centerDiv">
-       <AggNorm/>
+        <h1>Our Users</h1>
+        <AggNest />
        </div>
+       <br></br>
        <div className="centerDiv">
         <Projection />
-        <AggNest />
+        <AggNorm/>
         <AggHav />
        </div>
 

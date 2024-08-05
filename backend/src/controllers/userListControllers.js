@@ -80,12 +80,12 @@ async function query_AggNest(req, res) {
    try {
      await oracle.withOracleDB(async (connection) => {
         const result = await connection.execute(`
-            select u2.username 
+            select u2.username
             from Users2 u2
             where u2.dateJoined >= ALL (select dateJoined from Users2)
            `);
 
-           console.log(result);
+         console.log(result);
          return res.json(result);
      });
   } catch (e) {

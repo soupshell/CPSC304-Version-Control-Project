@@ -13,7 +13,6 @@ function AggNorm(props) {
   }, []);
 
   let  tableData = [];
-  console.log(aggNormData);
   for (let i=0;i<aggNormData.length; i++){
    let row = aggNormData[i];
    let tablerow=[];
