@@ -16,7 +16,7 @@ async function getFileContents(req, res) {
        console.log(username, password, fileID, repoName);
  
        if (username === null || password === null || fileID === null || repoName === null)  {
-          res.status(400).send("empty something");
+         return res.status(400).send("empty something");
        }
  
        await oracle.withOracleDB(async (connection) => {
@@ -86,7 +86,7 @@ async function getFileContents(req, res) {
 
 
    if (!username || !password || !repoName || !branchName || !folderId)  {
-      res.status(400).send("empty something");
+      return res.status(400).send("empty something");
    }
 
    console.log(username,password,repoName, branchName);
@@ -116,10 +116,10 @@ async function getFileContents(req, res) {
       const folders = await getFoldersFromFolderID(connection, repoName, branchName, folderId);
        console.log("files that fit",  files);
        console.log("folders that fit",  folders);
-      res.json({queryResult: {files: files, folders: folders}});
+       return res.json({queryResult: {files: files, folders: folders}});
       });
    } catch (e) {
-      res.status(400).send(e.error);
+      return res.status(400).send(e.error);
    }
 }
 
@@ -378,7 +378,7 @@ async function createFolder(req, res) {
       console.log(repoName, username, password, fileName, branchName, parentFolderID);
 
       if (!repoName || !username || !password || !fileName || !branchName || !parentFolderID) {
-         res.status(400).send("repo empty");
+         return  res.status(400).send("repo empty");
       }
 
       await oracle.withOracleDB(async (connection) => {
