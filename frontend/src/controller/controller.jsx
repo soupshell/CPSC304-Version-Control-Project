@@ -287,6 +287,25 @@ async function postProjectionReq(selectedIds) {
     });
 
 
+async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
+  var request = reqPath.concat("createFile");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        repoName: repoName,
+        branchName: branchName,
+        fileName: fileName,
+        fileContent: fileContent,
+        parentFolderID: parentFolderID,
+      }),
+    });
+
     if (!response.ok) {
       console.log(await response.text());
       return false;
@@ -302,8 +321,36 @@ async function postProjectionReq(selectedIds) {
 }
 
 
+async function addFolder(username, password, folderName, parentFolder) {
+  var request = reqPath.concat("");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        repoName: repoName,
+        branchName: branchName,
+      }),
+    });
 
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID,
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder,
         getUniversalRepos, postProjectionReq
 };

@@ -7,6 +7,7 @@ const {testReactConnection, divisionGet, divisionPost, projectionPost, query_Agg
 
 
 
+
 router.get("/api", testReactConnection);
 
 router.get("/testConnection", testOracle);
@@ -19,6 +20,7 @@ router.post("/createRepo", createRepo);
 router.post("/getRepos", getRepos);
 router.post("/getFilesAndFolders", getFilesAndFolders);
 router.post("/getRootFolderID", getRootFolderID);
+router.post("/createFile", createFile);
 
 
 router.post("/projection", projectionPost);
