@@ -32,6 +32,7 @@ router.post("/addUserToRepo", addUserToRepo);
 router.post("/getIssue", getIssue);
 router.post("/getComments", getComments);
 router.post("/setResolved", setResolved);
+router.post("/deleteIssue", deleteIssue);
 
 
 router.post("/projection", projectionPost);

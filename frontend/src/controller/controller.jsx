@@ -602,7 +602,34 @@ async function setResolved(date, issueid) {
   }
 }
 
+async function deleteIssue(issueid) {
+  var request = reqPath.concat("deleteIssue");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issueid: issueid
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, 
         getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, postAggHavReq, postDivisionReq, 
-        getIssues, getContributors, addUserToRepo, getIssue, getComments, setResolved};
+        getIssues, getContributors, addUserToRepo, getIssue, getComments, setResolved, deleteIssue};
 

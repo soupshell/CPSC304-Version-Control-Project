@@ -461,6 +461,26 @@ async function setResolved(req, res) {
    }
 }
 
+async function deleteIssue(req, res) {
+   try {
+
+      const issueid = req.body.issueid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            delete from Issues
+            where id = :issueid
+            COMMIT;`, {issueid: issueid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue, setResolved};
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue, setResolved, deleteIssue};

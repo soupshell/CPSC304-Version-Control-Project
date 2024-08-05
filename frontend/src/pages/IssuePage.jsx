@@ -1,5 +1,6 @@
 import RepoHeader from "../components/RepoHeader";
 import { useParams, Link } from "react-router-dom";
+import { getIssue, getComments, setResolved, deleteIssue} from "../controller/controller";
 import { useState } from 'react';
 import { useEffect } from 'react';
 
@@ -131,7 +132,12 @@ function IssuePage(props) {
               const res = await setResolved(new Date().toLocaleTimeString, issueid);
               await fetchIssue();
             }}>Mark Resolved</Button>
-            <Button>Delete this issue</Button>
+            <Button onClick={async (e) => {
+              const res = await deleteIssue(issueid);
+              return (
+                <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
+              );
+            }}>Delete this issue</Button>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
