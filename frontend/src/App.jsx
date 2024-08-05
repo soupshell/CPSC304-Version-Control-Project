@@ -70,6 +70,7 @@ function App() {
             <Route path="/:User/:Repo" element={isVerified != 0 ? <RepoHome />:<Login verifyFn={verify} signupFn = {signup} />}/>
             <Route path = "/:User/:Repo/:FileID" element = {isVerified != 0 ? <FilePage/>: <Login verifyFn={verify} signupFn = {signup} />}> </Route>
             <Route path = "/testSQL" element = {<TesterPage></TesterPage>}> </Route>
+            <Route path = "/:User/:Repo/Issues" element = {isVerified != 0 ? <Issues/>: <Login verifyFn={verify}/>}> </Route>
       </Routes>
       </div>
       </Router>
