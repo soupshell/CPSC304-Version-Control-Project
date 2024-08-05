@@ -89,7 +89,7 @@ async function checkUserHasAccessToRepo(req, res) {
       res.json({validLogin: result.rows[0][0]});
       });
    } catch (e) {
-      res.status(400).send(e.error);
+      return res.status(400).send(e.error);
    }
 }
 
@@ -101,7 +101,7 @@ async function checkLogin(req, res) {
       console.log(username, password);
 
       if (username === null || password === null) {
-         res.status(400).send("empty username or password");
+         return  res.status(400).send("empty username or password");
       }
 
       await oracle.withOracleDB(async (connection) => {
@@ -141,8 +141,8 @@ async function addUserToDB(req, res) {
       `, { username: username, email: email});
 
 
-      if(alreadyExists){
-        return res.sendStatus(400).send("username or email already in taken");
+      if(alreadyExists.rows[0][0]){
+        return res.status(400).send("username or email already in taken");
       }
 
 
@@ -219,7 +219,7 @@ async function getAllContributors(req, res) {
       const repoName = req.body.repoName;
 
       if (repoName == null) {
-         res.sendStatus(400).send("no repo provided");
+         return  res.sendStatus(400).send("no repo provided");
       }
 
       await oracle.withOracleDB(async (connection) => {
@@ -234,10 +234,10 @@ async function getAllContributors(req, res) {
 
       console.log(result);
       
-      res.json({queryResult : result});
+      return res.json({queryResult : result});
       });
    } catch (e) {
-      res.sendStatus(400).send(e.error);
+      return res.sendStatus(400).send(e.error);
    }
 }
 
@@ -252,7 +252,7 @@ async function createRepo(req, res) {
       console.log(repoName, username);
 
       if (!repoName || !username) {
-         res.status(400).send("repo empty");
+         return res.status(400).send("repo empty");
       }
 
       await oracle.withOracleDB(async (connection) => {
@@ -288,10 +288,10 @@ async function createRepo(req, res) {
             `, {repoName: repoName, username: username});
 
             console.log(result);
-            res.json({createdSuccess: true});
+            return  res.json({createdSuccess: true});
       });
    } catch (e) {
-      res.status(400).send(e.error);
+      return res.status(400).send(e.error);
    }
 }
 
@@ -305,7 +305,7 @@ async function getRepos(req, res) {
       console.log(username, password);
 
       if (!username || !password) {
-         res.status(400).send("something went wrong");
+         return res.status(400).send("something went wrong");
       }
      
       // feel free to make this better lol
@@ -336,10 +336,10 @@ SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
  `, {username: username});
 
             console.log(result);
-            res.json({queryResult: result});
+            return   res.json({queryResult: result});
       });
    } catch (e) {
-      res.status(400).send(e.error);
+      return res.status(400).send(e.error);
    }
 }
 
