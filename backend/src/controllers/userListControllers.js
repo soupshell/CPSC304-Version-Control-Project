@@ -19,6 +19,41 @@ async function divisionGet(req, res) {
    }
 }
 
+async function divisionPost(req, res) {
+    try {
+      const repoList = req.body.repoList;
+      console.log(repoList);
+      const repoListString = repoList.join(", ");
+
+      if (repoListString) {
+         res.status(400).send("No repos selected");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+         // u1 is owner, u2 is current user
+         const result = await connection.execute(`
+            SELECT u2.username
+            FROM Users2 u2
+            WHERE NOT EXISTS
+               ((SELECT id
+               FROM UserContributesTo u_r1
+               WHERE ID in (:listofRepoString))
+               minus
+               (SELECT u_r2.repoid
+               FROM UserContributesTo u_r2
+               WHERE u2.id = u_r2.userid))
+
+            `, {listofRepoString: repoListString});
+
+            console.log(result);
+            res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
 async function projectionPost(req, res) {
    try {
       const ids = req.body.selectedIds;
@@ -40,4 +75,40 @@ async function projectionPost(req, res) {
    }
 }
 
-module.exports = { testReactConnection, divisionGet, projectionPost};
+
+async function query_AggNest(req, res) {
+   try {
+     const repoList = req.body.repoList;
+     console.log(repoList);
+     const repoListString = repoList.join(", ");
+
+     if (repoListString) {
+        res.status(400).send("No repos selected");
+     }
+     
+     await oracle.withOracleDB(async (connection) => {
+        // u1 is owner, u2 is current user
+        const result = await connection.execute(`
+           SELECT u2.username
+           FROM Users2 u2
+           WHERE NOT EXISTS
+              ((SELECT id
+              FROM UserContributesTo u_r1
+              WHERE ID in (:listofRepoString))
+              minus
+              (SELECT u_r2.repoid
+              FROM UserContributesTo u_r2
+              WHERE u2.id = u_r2.userid))
+
+           `, {listofRepoString: repoListString});
+
+           console.log(result);
+           res.json({queryResult: result});
+     });
+  } catch (e) {
+     res.status(400).send(e.error);
+  }
+}
+
+
+module.exports = { testReactConnection, divisionGet, divisionPost, projectionPost, query_AggNest, query_AggHav, query_AggNorm};
