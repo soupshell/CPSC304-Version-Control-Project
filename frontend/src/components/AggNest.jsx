@@ -12,7 +12,6 @@ function AggNest(props) {
    getData();
   }, []);
 
-console.log(aggNestData);
    return (
       <div className="centerColDiv">
       <h2>AggNest</h2>
