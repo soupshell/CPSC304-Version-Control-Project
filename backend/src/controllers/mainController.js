@@ -208,6 +208,7 @@ SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
                             WHERE repoid = r.id
                            ))
       and u2.username =  :username
+      ORDER BY c.dateCreated DESC
  `, {username: username});
 
             console.log(result);

@@ -1,20 +1,23 @@
 import RepoHeader from "../components/RepoHeader";
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getFilesAndFolders, getRootFolderID } from "../controller/controller";
+import { getFilesAndFolders, getRootFolderID, addFile} from "../controller/controller";
+import Modal from 'react-modal';
 
 function RepoHome(props) {
   const params = useParams(); // access params.id
-  //TODO THIS IS THE EXAMPLE REPODATA- should be async query in live
   const loggedInUser = sessionStorage.getItem("isVerified");
   const currentUserPassword = sessionStorage.getItem("password");
- 
+  const [popup, setPopUp] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [fileContent, setFileContent] = useState("")
+  const [folderName, setFolderName] = useState("");
   const [repoState, setRepoState] = useState(
     {
-      id: "",
+      id: 0,
       repoName: params.Repo,
       currBranchName: "main",
-      currCommitId:  "",
+      currCommitId:  0,
       currFolderPath: "/",
       folders: [],
       files: [],
@@ -22,47 +25,42 @@ function RepoHome(props) {
     }
   );
 
+  async function check() {
+    try{
+   const auth = await getRootFolderID(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName);
+   if(auth === false) {
+     setRepoState(null);
+     return;
+   }
+
+   const folderID = auth.queryResult.rows[0][0];
+   const commitId = auth.queryResult.rows[0][1];
+   const result = await getFilesAndFolders(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName, folderID);
+
+   const files = result.queryResult.rows;
+
+   console.log("files", files);
+   
+   setRepoState({
+     id: folderID,
+     repoName: params.Repo,
+     currBranchName: repoState.currBranchName,
+     currCommitId:  commitId,
+     currFolderPath: repoState.currFolderPath,
+     folders: [],
+     files: files,
+     contributors: repoState.contributors,
+   });
+
+
+     console.log(result);
+    } catch(e){
+     setRepoState(null);
+     console.log(e);
+    }
+   }
   
-
   useEffect(() => {
-    async function check() {
-     try{
-    const auth = await getRootFolderID(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName);
-
-
-    if(auth === false) {
-      console.log(auth);
-      setRepoState(null);
-      return;
-    }
-
-    const folderID = auth.queryResult.rows[0][0];
-    const commitId = auth.queryResult.rows[0][1];
-    const result = await getFilesAndFolders(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName, folderID);
-
-    const files = result.queryResult.rows;
-
-    console.log("files", files);
-    
-    setRepoState({
-      id: folderID,
-      repoName: params.Repo,
-      currBranchName: repoState.currBranchName,
-      currCommitId:  commitId,
-      currFolderPath: repoState.currFolderPath,
-      folders: [],
-      files: files,
-      contributors: repoState.contributors,
-    });
-
-
-      console.log(result);
-     } catch(e){
-      setRepoState(null);
-      console.log(e);
-     }
-    }
-
     check();
   }, []);
 
@@ -107,7 +105,10 @@ function RepoHome(props) {
           Folders and files
           {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder[1]}</button></li>)}
           {repoState["files"].map(file => <li className='ctgrey-li'><Link to={String(file[0])}>
-                                          {String(file[1])}</Link></li>)}
+          {String(file[1])}</Link></li>)}
+        <button onClick={() => {
+          setPopUp(true);
+       }}> Commit a file </button>
         </ul>
         <div >
           <table border="1">
@@ -126,6 +127,66 @@ function RepoHome(props) {
         </div>
       </div>
       </div>
+
+
+<Modal isOpen={popup}
+    contentLabel="Selected Option"
+    ariaHideApp={false}
+    transparent={true}
+    >
+       <div className="card-container" style = {{width: "80vw", height: "80vh"}}>      
+      {<h1 >{"Add File"}</h1>}
+      <form onSubmit={async (e) => { 
+        e.preventDefault();
+        console.log(fileName, fileContent, repoState.id);
+        const res = await addFile(loggedInUser, currentUserPassword, fileName, fileContent, repoState.currBranchName, repoState.id, repoState.repoName);
+        if(res === false){
+          alert("file already exists!");
+       } else {
+         alert("file has been created");
+       }
+        await check();
+
+      }}>
+      <label> File name:
+            <input type="text" id={'fileName'} onChange={
+              (e) => {
+                setFileName(e.target.value);
+                e.preventDefault();
+               }
+            } required/>        
+      </label>
+
+      <label>File Content </label>
+        <textarea
+          style={{ minWidth: "500px", maxWidth: "1000px", height: "250px" }}
+          onChange={(e) => {
+           setFileContent(e.target.value);
+          }}
+          value={fileContent}
+        ></textarea>
+      <input type="submit" value="Submit"/>
+      </form>
+      {<h1 >{"Add Folder"}</h1>}
+      <form onSubmit={async (e) => { 
+        e.preventDefault();
+        console.log(folderName);
+      }}>
+      <label> Folder name:
+            <input type="text" id={'folderName'} onChange={
+              (e) => {
+                setFolderName(e.target.value);
+                e.preventDefault();
+               }
+            } required/>        
+      </label>
+      <input type="submit" value="Submit"/>
+      </form>
+      <button style ={{width: "100px", height: "50px"}} onClick={(e) => {
+        setPopUp(false);
+      }}> Close </button>
+    </div>
+   </Modal>
     </>
   );
 }
