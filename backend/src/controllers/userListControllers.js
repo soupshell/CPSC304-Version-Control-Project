@@ -78,29 +78,12 @@ async function projectionPost(req, res) {
 
 async function query_AggNest(req, res) {
    try {
-     const repoList = req.body.repoList;
-     console.log(repoList);
-     const repoListString = repoList.join(", ");
-
-     if (repoListString) {
-        res.status(400).send("No repos selected");
-     }
-     
      await oracle.withOracleDB(async (connection) => {
-        // u1 is owner, u2 is current user
         const result = await connection.execute(`
-           SELECT u2.username
-           FROM Users2 u2
-           WHERE NOT EXISTS
-              ((SELECT id
-              FROM UserContributesTo u_r1
-              WHERE ID in (:listofRepoString))
-              minus
-              (SELECT u_r2.repoid
-              FROM UserContributesTo u_r2
-              WHERE u2.id = u_r2.userid))
-
-           `, {listofRepoString: repoListString});
+            select u2.username 
+            from Users2 u2
+            where u2.dateJoined >= ALL (select dateJoined from Users2)
+           `);
 
            console.log(result);
            res.json({queryResult: result});
@@ -110,5 +93,45 @@ async function query_AggNest(req, res) {
   }
 }
 
+
+async function query_AggHav(req, res) {
+   try {
+      const minRepos = Math.max(1, req.body.repos);
+      
+      await oracle.withOracleDB(async (connection) => {
+        const result = await connection.execute(`
+            select u2.username, count(unique u_r.repoid) 
+            from Users2 u2, UserContributesTo u_r 
+            where u2.id = u_r.userid 
+            group by u2.username 
+            having count(unique u_r.repoid) > :minRepos 
+           `, {minRepos: minRepos});
+
+           console.log(result);
+           res.json(result);
+     });
+  } catch (e) {
+     res.status(400).send(e.error);
+  }
+}
+
+async function query_AggNorm(req, res) {
+   try {
+      await oracle.withOracleDB(async (connection) => {
+        const result = await connection.execute(`
+            select u2.username, count(unique u_r.repoid) as "Repo Count", listagg(r.name, ', ') as "Reponames"
+            from Users2 u2, UserContributesTo u_r, Repo r
+            where u2.id = u_r.userid 
+            and u_r.repoid = r.id
+            group by u2.username
+         `);
+
+           console.log(result);
+           res.json(result);
+     });
+  } catch (e) {
+     res.status(400).send(e.error);
+  }
+}
 
 module.exports = { testReactConnection, divisionGet, divisionPost, projectionPost, query_AggNest, query_AggHav, query_AggNorm};
