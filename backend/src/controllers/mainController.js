@@ -397,5 +397,48 @@ async function getIssues(req, res) {
    }
 }
 
+async function getComments(req, res) {
+   try {
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors};
+      const issueid = req.body.issueid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            SELECT DISTINCT c.id, c.userid, c.issueId, c.message, c.timePosted, u.username
+            from Comments c, Users2 u
+            where c.issueId = :issueid, 
+            and c.userid = u.userid,
+            order by timePosted asc;`, {issueid: issueid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+async function getIssue(req, res) {
+   try {
+
+      const issueid = req.body.issueid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            SELECT DISTINCT i.id, i.desc, i.dateResolved, i.repoID
+            from Issues i
+            where i.issueId = :issueid;`, {issueid: issueid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue};

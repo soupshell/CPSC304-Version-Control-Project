@@ -520,7 +520,61 @@ async function addUserToRepo(username, password, repoName, otherUser, permission
   }
 }
 
+async function getComments(issueID) {
+  var request = reqPath.concat("getComments");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issueid: issueID
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function getIssue(issueID) {
+  var request = reqPath.concat("getIssue");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issueid: issueID
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, 
         getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, postAggHavReq, postDivisionReq, 
-        getIssues, getContributors, addUserToRepo};
+        getIssues, getContributors, addUserToRepo, getIssue, getComments};
 
