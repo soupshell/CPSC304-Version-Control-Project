@@ -164,7 +164,7 @@ async function addUserToDB(req, res) {
            return  res.json({ validLogin: true });
       });
    } catch (e) {
-      return res.sendStatus(200).send(e.error);
+      return res.status(200).send(e.error);
    }
 }
 
@@ -208,7 +208,7 @@ async function addUserToRepo(req, res) {
       });
    } catch (e) {
       console.log(e);
-      return res.sendStatus(200).send(e.error);
+      return res.status(200).send(e.error);
    }
 }
 
@@ -237,7 +237,7 @@ async function getAllContributors(req, res) {
       return res.json({queryResult : result});
       });
    } catch (e) {
-      return res.sendStatus(400).send(e.error);
+      return res.status(400).send(e.error);
    }
 }
 
