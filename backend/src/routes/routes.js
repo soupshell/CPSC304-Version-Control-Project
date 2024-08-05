@@ -19,6 +19,7 @@ router.post("/getRepos", getRepos);
 router.post("/getFilesAndFolders", getFilesAndFolders);
 router.post("/getRootFolderID", getRootFolderID);
 // router.post("/createFile", createFile);
+router.post("/getIssues", getIssues);
 
 
 router.post("/projection", projectionPost);

@@ -220,4 +220,58 @@ SELECT DISTINCT r.id, r.name, u1.username, p2.readWrite, b.name, c.dateCreated
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos};
+async function getIssues(req, res) {
+   try {
+
+      const reponame = req.body.repo;
+      const filter = req.body.filter;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = null;
+      
+         if (filter == "unresolved") {
+            result = await connection.execute(`
+               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+               from Issues i, Repo r
+               where r.name = :reponame, 
+               and r.id = i.repoID
+               and i.dateResolved = NULL;`, {reponame: reponame});
+
+         } else if (filter == "resolved asc") {
+            result = await connection.execute(`
+               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+               from Issues i, Repo r
+               where r.name = :reponame, 
+               and r.id = i.repoID,
+               and i.dateResolved <> NULL
+               order by i.dateResolved asc;`, {reponame: reponame});
+
+         } else if (filter == "resolved desc") {
+            result = await connection.execute(`
+               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+               from Issues i, Repo r
+               where r.name = :reponame, 
+               and r.id = i.repoID
+               and i.dateResolved <> NULL
+               order by i.dateResolved desc;`, {reponame: reponame});
+
+         } else { //default
+            result = await connection.execute(`
+               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+               from Issues i, Repo r
+               where r.name = :reponame, 
+               and r.id = i.repoID
+               order by i.dateResolved asc;`, {reponame: reponame});
+         }
+
+            console.log(result);
+            res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues};
