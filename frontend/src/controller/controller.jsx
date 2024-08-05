@@ -285,7 +285,13 @@ async function postProjectionReq(selectedIds) {
       },
       body: JSON.stringify({'selectedIds': selectedIds})
     });
-
+    const resJSON = await response.json();
+    return {headers: selectedIds, table: resJSON.rows};
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
 async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFile");
@@ -349,8 +355,6 @@ async function addFolder(username, password, folderName, parentFolder) {
     console.log(e);
     return false;
   }
-}
-
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder,
-        getUniversalRepos, postProjectionReq
 };
+
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, getUniversalRepos, postProjectionReq};
