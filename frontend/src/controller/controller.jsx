@@ -27,17 +27,15 @@ async function queryDB(str) {
   }
 }
 
-
 async function userLogin(username, password) {
-  var request = reqPath.concat("login");
+  const request = "http://localhost:59000/login";
   try {
     const response = await fetch(request, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: username,
-        password: password
+      body: JSON.stringify({ username: username, password: password
       }),
     });
 
@@ -45,8 +43,9 @@ async function userLogin(username, password) {
       console.log(await response.text());
       return false;
     }
-
-    return (await response.json()).validLogin;
+    
+    const reqbody = await response.json()
+    return reqbody.validLogin;
   } catch (e) {
     console.log(e);
     return false;

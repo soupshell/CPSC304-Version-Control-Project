@@ -21,25 +21,9 @@ function App() {
   //   .then(data => console.log( data));
   // }, []);
 
-  useEffect(() => {
-    const res = fetch('http://localhost:59000/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: 'test_account',
-        password: '12345678910',
-      })
-    }).then(response => response.json())
-    .then(data => console.log( data));
-
-  }, []);
 
   async function verify(formValue){
     console.log('verify called');
-    console.log(formValue);
     const username = formValue['username'];
     const passcode = formValue['pwd'];
 
