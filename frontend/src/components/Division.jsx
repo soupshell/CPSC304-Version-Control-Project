@@ -1,5 +1,13 @@
 import {useState} from 'react';
 
+// const repos = [
+//   [ 1, "NON REMOTE" ],
+//    [ 2, "THIS IS NOT REMOTE" ],
+//    [ 3, "react_app" ],
+//    [ 4, "cat_repository" ],
+//   [ 5, "cat_repository2" ]
+//   ];
+//props = {repolist=[list of repos]}
 function Division(props) {
    const [selectedIds, setSelectedIds] = useState([]);
    const handleCheckboxChange = (event) => {
@@ -12,34 +20,18 @@ function Division(props) {
    }
    
    const handleSubmit = (e) => {
+      e.preventDefault();
       console.log(selectedIds);
    }
    
-   const repos = [
-      {
-        id: "1",
-        name: "Student",
-      },{
-         id: "2",
-         name: "test",
-       },{
-         id: "3",
-         name: "hey",
-       },{
-         id: "4",
-         name: "sup",
-       },{
-         id: "5",
-         name: "world",
-       }
-    ];
 
-   const checkboxList = repos.map((repo, index) => (
-      <label key={repo.id}>
-        <input type="checkbox" value={repo.id} onChange={(e) => handleCheckboxChange(e)} />
-        {repo.name}
+   const checkboxList = [];
+   props.repolist.forEach((repo) => checkboxList.push((
+      <label key={repo[0]}>
+        <input type="checkbox" value={repo[0]} onChange={(e) => handleCheckboxChange(e)} />
+        {repo[1]}
       </label>
-    ));
+    )));
 
 
    return (

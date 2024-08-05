@@ -28,7 +28,7 @@ async function queryDB(str) {
 }
 
 async function userLogin(username, password) {
-  const request = "http://localhost:59000/login";
+  const request = reqPath.concat("login");
   try {
     const response = await fetch(request, {
       method: "POST",
@@ -255,6 +255,37 @@ async function getRootFolderID(username, password, repoName, branchName) {
   }
 }
 
+//for divisionGet
+async function getUniversalRepos() {
+  var request = reqPath.concat("divisionGet");
+  try {
+    const response = await fetch(request);
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    // console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postProjectionReq(selectedIds) {
+  var request = reqPath.concat("projection");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'selectedIds': selectedIds})
+    });
+
 
 async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFile");
@@ -320,9 +351,6 @@ async function addFolder(username, password, folderName, parentFolder) {
   }
 }
 
-
-
-
-
-
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile};
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder,
+        getUniversalRepos, postProjectionReq
+};
