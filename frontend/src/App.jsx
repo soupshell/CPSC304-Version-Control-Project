@@ -14,9 +14,16 @@ function App() {
 
   const [isVerified, setStatus] = useState(sessionStorage.getItem('isVerified') || 0);
 
+  //GET REQUEST
+  // useEffect(() => {
+  //   const res1 = fetch('http://localhost:59000/api')
+  //   .then(response => response.json())
+  //   .then(data => console.log( data));
+  // }, []);
+
+
   async function verify(formValue){
     console.log('verify called');
-    console.log(formValue);
     const username = formValue['username'];
     const passcode = formValue['pwd'];
 

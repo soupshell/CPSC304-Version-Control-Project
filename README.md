@@ -50,5 +50,7 @@ We will talk to TA on July 26 to ask for help, and then spend time after call se
 
 Please see Milestone 3 UI Draft-3 file in repository. 
 
+### How to Run ###
 
+<img width = "572" alt="Deployment Instructions" src="https://media.github.students.cs.ubc.ca/user/15976/files/bd90499b-9492-4393-8b14-de4003aa87f0">
 
