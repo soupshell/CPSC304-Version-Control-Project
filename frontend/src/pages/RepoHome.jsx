@@ -149,7 +149,7 @@ try{
             </tbody>
           </table>
           <br/>
-          <Link className='ctgrey-button' to='/Issues'>See issues for this Repo</Link>
+          <Link className='ctgrey-button' to='Issues'>See issues for this Repo</Link>
         </div>
       </div>
       </div>
