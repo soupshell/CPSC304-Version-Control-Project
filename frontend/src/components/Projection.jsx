@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {postProjectionReq} from "../controller/controller";
 
 
@@ -29,8 +29,6 @@ function Projection(props) {
   Object.entries(projectionData['headers']).forEach(([key, value]) => {
     projectionHeaders.push((<th>{value}</th>));
   });
-
-  console.log(projectionData);
 
   for (let i=0;i<projectionData['table'].length; i++){
     let row = projectionData['table'][i];

@@ -1,6 +1,7 @@
 import Projection from '../components/Projection';
 import AggNest from '../components/AggNest';
 import AggHav from '../components/AggHav';
+import AggNorm from '../components/AggNorm'
 import Division from '../components/Division';
 import { useEffect, useState } from 'react';
 import {getUniversalRepos} from "../controller/controller.jsx"
@@ -23,6 +24,9 @@ function UsersList(props) {
    return (
      <>
        <h1>Our Users</h1>
+       <div className="centerDiv">
+       <AggNorm/>
+       </div>
        <div className="centerDiv">
         <Projection />
         <AggNest />

@@ -86,7 +86,7 @@ async function query_AggNest(req, res) {
            `);
 
            console.log(result);
-           res.json({queryResult: result});
+         return res.json(result);
      });
   } catch (e) {
      res.status(400).send(e.error);
@@ -126,8 +126,8 @@ async function query_AggNorm(req, res) {
             group by u2.username
          `);
 
-           console.log(result);
-           res.json(result);
+         console.log(result);
+         return res.json(result);
      });
   } catch (e) {
      res.status(400).send(e.error);
