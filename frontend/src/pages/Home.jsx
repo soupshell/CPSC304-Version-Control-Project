@@ -23,39 +23,37 @@ function Home(props) {
  }
 
  
+ async function fetchRepos() {
+  try {
+    const result = await getRepos(loggedInUser,currentUserPassword);
+    if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
+      const repos = []
+       result.queryResult.rows.forEach((row) => {
+       const id = row[0];
+       const name = row[1];
+       const owner =  row[2];
+       const userPerm = row[3];
+       const latestCommitBranch = row[4];
+       const date = row[5];
 
+       repos.push({'id': id,
+        'name': name,
+        'owner': owner,
+        'latestCommitBranch': latestCommitBranch,
+        'latestCommitTime': date,
+        'userPerm': userPerm
+      })
+    });
+      setRepos(repos);
+      console.log(result.queryResult);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
 
   useEffect(() => {
-    async function check() {
-      try {
-        const result = await getRepos(loggedInUser,currentUserPassword);
-        if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
-          const repos = []
-           result.queryResult.rows.forEach((row) => {
-           const id = row[0];
-           const  name = row[1];
-           const owner =  row[2];
-           const userPerm = row[3];
-           const latestCommitBranch = row[4];
-           const date = row[5];
-
-           repos.push({'id': id,
-            'name': name,
-            'owner': owner,
-            'latestCommitBranch': latestCommitBranch,
-            'latestCommitTime': date,
-            'userPerm': userPerm
-          })
-        });
-          setRepos(repos);
-          console.log(result.queryResult);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    check();
+    fetchRepos();
   }, []);
 
 
@@ -78,16 +76,20 @@ function Home(props) {
        <div className="card-container" style = {{width: "80vw", height: "80vh"}}>      
       {title && <h1 >{title}</h1>}
       <form onSubmit={async (e) => { 
+        e.preventDefault();
         const repoName = formValues['repoName'];
         const res = await createRepo(repoName,loggedInUser);
-        console.log(res);
-        e.preventDefault();
-
+        if(res === false){
+           alert("Repo already exists!");
+        } else {
+          alert("repo has been created");
+        }
+        await fetchRepos();
       }}>
       <label> Reponame:
             <input type="text" id={'repoName'} onChange={handleChange} required/>        
       </label>
-      <input type="submit" value="Submit" />
+      <input type="submit" value="Submit"/>
       </form>
       <button style ={{width: "100px", height: "50px"}} onClick={(e) => {
         setPopUp(false);

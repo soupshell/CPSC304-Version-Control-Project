@@ -1,4 +1,9 @@
 const oracle = require('./oracletest');
+const { createHash } = require('crypto');
+
+function hash(string) {
+  return createHash('sha256').update(string).digest('hex');
+}
 
 
 async function getFileContents(req, res) {
@@ -124,24 +129,8 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
       AND fil1.id = fol1.id
       AND fif.folderID = fil1.id
       AND fif.fileID = fil2.id
-      AND fil1.id = (SELECT fil.id 
-                 FROM folders fol, CommitsAndFolders cf, files fil
-                 WHERE fol.id = :folderID
-                 AND fol.id = cf.folderid
-                 AND fol.id = fil.id 
-                  AND cf.commitid = (SELECT DISTINCT MAX(id)
-                                    FROM Commits
-                                     WHERE datecreated = (SELECT DISTINCT max(datecreated)
-                                                           FROM commits 
-                                                           WHERE repoid = ( SELECT id
-                                                                           FROM repo
-                                                                           WHERE name = :repoName
-                                                                           )
-                                                            AND branchName = :branchName
-                                                     )
-                                 )  
-               )       
-        `,{repoName, repoName, branchName: branchName, folderID: folderID});
+      AND fil1.id = :folID
+        `,{folID: folderID});
  }
 
 
@@ -184,17 +173,14 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
         FROM folders fol, CommitsAndFolders cf, files fil
         WHERE fol.id = cf.folderid
         AND fol.id = fil.id 
-        AND cf.commitid = (SELECT DISTINCT MAX(id)
-                            FROM Commits
-                            WHERE datecreated = (SELECT DISTINCT max(datecreated)
-                                                  FROM commits 
-                                                     WHERE repoid = ( SELECT id
-                                                                      FROM repo
-                                                                     WHERE name = :repoName
-                                                                    )
-                            AND branchName = :branchName
-                                                  )
-                            )                       
+        AND cf.commitid = (SELECT MAX(id)
+        FROM Commits
+        WHERE repoid = (SELECT id
+                      FROM repo
+                      WHERE name =  :repoName
+                      )
+  AND branchName = :branchName
+ )                               
            `,{repoName, repoName, branchName: branchName});
 
       console.log(fileID);
@@ -205,6 +191,176 @@ async function getFilesFromFolderID(connection, repoName, branchName, folderID){
    }
  }
 
+ async function createFile(req, res) {
+   try {
+      const repoName = req.body.repoName;
+      const username = req.body.username;
+      const password = req.body.password;
+      const fileName = req.body.fileName;
+      const fileContent = req.body.fileContent;
+      const branchName = req.body.branchName;
+      const parentFolderID = req.body.parentFolderID;
+
+      // put through hash function 
+      const fileHash = hash(req.body.fileContent);
+
+
+      console.log(repoName, username, password, fileName, fileContent, branchName, parentFolderID, fileHash);
+
+      if (!username || ! password) {
+        return res.status(400).send("bad login");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+      
+
+        // check if blob doesnt exist 
+        // if it doesnt create blob from file content
+        // create a new file
+        // make a new commit for the current branch
+        // copy folder the file resides in and make a new folder with the new file in it
+        // TO DO: uhhh recursively update every folder that the new file is in
+
+
+      const checkBlob = await connection.execute(
+         `   SELECT Count(*)
+             FROM Blob
+             WHERE hash = :fileHash
+            `, {fileHash: fileHash});
+
+
+      const blobExists = checkBlob.rows[0][0];
+        
+      if(!blobExists){
+         const makeBlob = await connection.execute(
+            `
+                BEGIN
+                INSERT INTO Blob (hash, content) VALUES (:fileHash, :fileContent);
+                COMMIT;
+                END;
+               `, {fileHash: fileHash, fileContent: fileContent});
+
+               console.log(makeBlob);
+      }
+
+     const checkFileName = await connection.execute(`
+      SELECT count (*)
+      FROM Files f, FilesInFolders fif
+      WHERE f.path =  :fileName
+      AND fif.fileID = f.id
+      AND fif.folderID = :parentFolderID              
+   `, {fileName: fileName, parentFolderID: parentFolderID });
+
+     if(checkFileName.rows[0][0] > 0){
+      return res.status(400).send("DUPLICATE FILe");
+     }
+ 
+      const result = await connection.execute(`
+      DECLARE
+        var_date DATE;
+        var_commitID INTEGER;
+        var_userID INTEGER;
+        var_folderID INTEGER;
+        var_repoID INTEGER;
+        var_fileID INTEGER;
+      BEGIN
+        SELECT id INTO var_userID FROM Users2 WHERE username = :username;
+        SELECT CURRENT_DATE INTO var_date FROM DUAL;
+        SELECT MAX(id) + 1 INTO var_commitID FROM Commits;
+        SELECT id INTO var_repoID FROM Repo WHERE name = :repoName;
+        SELECT MAX(id) + 1 INTO var_folderID FROM Files;
+        SELECT MAX(id) + 2 INTO var_fileID FROM Files;
+
+         INSERT INTO Files(id, path, createdOn, blobHash) VALUES 
+              (var_fileID, :fileName, TO_DATE(var_date, 'yyyy/mm/dd'), :fileHash);
+       
+        INSERT INTO Commits (id, dateCreated, message, repoid, branchname, creatorUserID)
+        VALUES (var_commitID, TO_DATE(var_date, 'yyyy/mm/dd'), 'added a file', var_repoID, :branchName, var_userID);
+
+        INSERT INTO Files(id, path, createdOn, blobHash) 
+        VALUES  (var_folderID, '/', TO_DATE(var_date, 'yyyy/mm/dd'), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+
+	     INSERT INTO Folders(id, numberOfFiles) 
+        SELECT var_folderID, numberOfFiles + 1
+        FROM FOLDERS
+        WHERE id = :parentFolderID;
+
+
+        INSERT INTO FilesInFolders(folderId, fileId) 
+        SELECT var_folderID, fileId
+        FROM FilesInFolders
+        WHERE folderId = :parentFolderID;
+
+         INSERT INTO FilesInFolders(folderId, fileId) 
+         VALUES (var_folderID,var_fileID);
+
+        INSERT INTO CommitsAndFolders (folderId, commitId)
+        VALUES (var_folderID, var_commitID);
+        COMMIT;
+      END;
+   `, {repoName: repoName, branchName: branchName, parentFolderID: parentFolderID, fileHash :fileHash, username: username, fileName: fileName});
+
+      console.log(result);
+            return res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+
+
+async function createFolder(req, res) {
+   try {
+      const repoName = req.body.repoName;
+      const username = req.body.username;
+
+      console.log(repoName, username);
+
+      if (!repoName || !username) {
+         res.status(400).send("repo empty");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        var_date DATE;
+        var_repoID INTEGER;
+        var_branchID INTEGER;
+        var_commitID INTEGER;
+        var_userID INTEGER;
+        var_folderID INTEGER;
+      BEGIN
+        SELECT id INTO var_userID FROM Users2 WHERE username = :username;
+        SELECT CURRENT_DATE INTO var_date FROM DUAL;
+        SELECT MAX(id) + 1 INTO var_repoID FROM Repo;
+        SELECT MAX(id) + 1 INTO var_commitID FROM Commits;
+        SELECT MAX(id) + 1 INTO var_folderID FROM Files;
+        INSERT INTO Repo(id, name, dateCreated) 
+        VALUES (var_repoID, :repoName, TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Branch(repoid, name, createdOn)
+        VALUES (var_repoID, 'main', TO_DATE(var_date, 'yyyy/mm/dd'));
+        INSERT INTO Commits (id, dateCreated, message, repoid, branchname, creatorUserID)
+        VALUES (var_commitID, TO_DATE(var_date, 'yyyy/mm/dd'), 'initial commit', var_repoID, 'main', var_userID);
+        INSERT INTO Files(id, path, createdOn, blobHash) 
+        VALUES  (var_folderID, '/', var_date, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+	     INSERT INTO Folders(id, numberOfFiles) 
+        VALUES (var_folderID, 0);
+        INSERT INTO CommitsAndFolders (folderId, commitId)
+        VALUES (var_folderID, var_commitID);
+        INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (var_userID, var_repoID, 2);
+        COMMIT;
+      END;
+            `, {repoName: repoName, username: username});
+
+            console.log(result);
+            res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
 
  
-module.exports =  {getFileContents, getFilesAndFolders, getRootFolderID}
+module.exports =  {getFileContents, getFilesAndFolders, getRootFolderID, createFile}
