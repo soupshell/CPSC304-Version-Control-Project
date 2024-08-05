@@ -1,7 +1,7 @@
 import RepoHeader from "../components/RepoHeader";
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getFilesAndFolders, getRootFolderID, addFile} from "../controller/controller";
+import { getFilesAndFolders, getRootFolderID, addFile, addFolder} from "../controller/controller";
 import Modal from 'react-modal';
 
 function RepoHome(props) {
@@ -13,13 +13,15 @@ function RepoHome(props) {
   const [fileName, setFileName] = useState("");
   const [fileContent, setFileContent] = useState("")
   const [folderName, setFolderName] = useState("");
+  const [temp, setTemp] = useState(1);
+  const [currentFolderID, setCurrentFolderID] = useState(null);
+  const [currentPath, setCurrentPath] = useState("/");
+  const [currentCommitId, setCurrentCommitID] = useState(0);
+
   const [repoState, setRepoState] = useState(
     {
-      id: 0,
       repoName: params.Repo,
       currBranchName: "main",
-      currCommitId:  0,
-      currFolderPath: "/",
       folders: [],
       files: [],
       contributors: {username: "Edit", username2: "Owner" },
@@ -27,28 +29,42 @@ function RepoHome(props) {
   );
 
   async function check() {
-    try{
-   const auth = await getRootFolderID(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName);
-   if(auth === false) {
+    console.log(repoState);
+try{
+ var commitID;
+ var folderID;
+  if(currentFolderID === null){
+     const auth = await getRootFolderID(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName);
+
+     if(auth === false) {
      setRepoState(null);
      return;
    }
+     
+    setCurrentFolderID(auth.queryResult.rows[0][0]);
+    setCurrentCommitID(auth.queryResult.rows[0][1]);
 
-   const folderID = auth.queryResult.rows[0][0];
-   const commitId = auth.queryResult.rows[0][1];
+    folderID =  auth.queryResult.rows[0][0];
+    commitID = auth.queryResult.rows[0][1];
+    console.log(folderID);
+  } else {
+    folderID = currentFolderID;
+    commitID = currentCommitId
+  }
+
+   console.log(folderID);
    const result = await getFilesAndFolders(loggedInUser,currentUserPassword, repoState.repoName, repoState.currBranchName, folderID);
 
-   const files = result.queryResult.rows;
+   const files = result.queryResult.files.rows;
+   const folders = result.queryResult.folders.rows;
 
    console.log("files", files);
    
    setRepoState({
-     id: folderID,
      repoName: params.Repo,
      currBranchName: repoState.currBranchName,
-     currCommitId:  commitId,
-     currFolderPath: repoState.currFolderPath,
-     folders: [],
+     currCommitId:  commitID,
+     folders: folders,
      files: files,
      contributors: repoState.contributors,
    });
@@ -63,7 +79,7 @@ function RepoHome(props) {
   
   useEffect(() => {
     check();
-  }, []);
+  }, [temp]);
 
 
 
@@ -98,13 +114,22 @@ function RepoHome(props) {
         <h3>current branch: {repoState["currBranchName"]}</h3>
       </div>
       <div className="centerDiv">
-        <h3> {repoState["currFolderPath"]} </h3>
-        <h3> commitId: {repoState['currCommitId']}</h3>
+        <h3> {currentPath} </h3>
+        <h3> commitId: {currentCommitId}</h3>
       </div>
       <div className="centerDiv">
         <ul className='centerColDiv'>
           Folders and files
-          {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick=''>{folder[1]}</button></li>)}
+          {repoState["folders"].map(folder => <li className='ctgrey-li'><button onClick= 
+          {async () => {
+            console.log("what", folder[0], folder[1]);
+            setCurrentFolderID(folder[0]);
+            setCurrentPath(folder[1]);
+            setTemp(temp + 1);
+          }}
+          
+          
+          >{folder[1]}</button></li>)}
           {repoState["files"].map(file => <li className='ctgrey-li'><Link to={String(file[0])}>
           {String(file[1])}</Link></li>)}
         <button onClick={() => {
@@ -139,15 +164,17 @@ function RepoHome(props) {
       {<h1 >{"Add File"}</h1>}
       <form onSubmit={async (e) => { 
         e.preventDefault();
-        console.log(fileName, fileContent, repoState.id);
-        const res = await addFile(loggedInUser, currentUserPassword, fileName, fileContent, repoState.currBranchName, repoState.id, repoState.repoName);
+        console.log(fileName, fileContent, currentFolderID);
+        const res = await addFile(loggedInUser, currentUserPassword, fileName, fileContent, repoState.currBranchName, currentFolderID, repoState.repoName);
         if(res === false){
           alert("file already exists!");
        } else {
+         console.log(res);
+         setCurrentFolderID(res.queryResult.rows[0][0]);
+         setCurrentCommitID(res.queryResult.rows[0][1]);
          alert("file has been created");
        }
-        await check();
-
+       setTemp(temp + 1);
       }}>
       <label> File name:
             <input type="text" id={'fileName'} onChange={
@@ -168,10 +195,22 @@ function RepoHome(props) {
         ></textarea>
       <input type="submit" value="Submit"/>
       </form>
+
+
+
       {<h1 >{"Add Folder"}</h1>}
       <form onSubmit={async (e) => { 
-        e.preventDefault();
-        console.log(folderName);
+       e.preventDefault()
+       const res = await addFolder(loggedInUser, currentUserPassword, folderName, repoState.currBranchName, currentFolderID, repoState.repoName);
+       if(res === false){
+         alert("folder  already exists!");
+      } else {
+        console.log(res);
+        setCurrentFolderID(res.queryResult.rows[0][0]);
+        setCurrentCommitID(res.queryResult.rows[0][1]);
+        alert("folder has been created");
+      }
+      setTemp(temp + 1);
       }}>
       <label> Folder name:
             <input type="text" id={'folderName'} onChange={
@@ -187,6 +226,8 @@ function RepoHome(props) {
         setPopUp(false);
       }}> Close </button>
     </div>
+
+
    </Modal>
     </>
   );

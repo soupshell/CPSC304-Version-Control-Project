@@ -9,7 +9,11 @@ function Issues(props) {
 
     //then, query for all the Issues with foreign key repoid = param repoID
 
-    const {user, repo} = useParams(); // access params.id
+    const params = useParams(); // access params.id
+    const user = params.User;
+    const repo = params.Repo;
+
+    console.log(user,repo);
 
     const [issues, setIssues] = useState([]);
 

@@ -1,7 +1,6 @@
 
 
 
-
 function ContributorTable(props) {
   const contributorRows = [];
   const contributorNames = props.contributors;
