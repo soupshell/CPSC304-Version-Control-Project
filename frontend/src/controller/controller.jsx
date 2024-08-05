@@ -28,7 +28,7 @@ async function queryDB(str) {
 }
 
 async function userLogin(username, password) {
-  const request = "http://localhost:59000/login";
+  const request = reqPath.concat("login");
   try {
     const response = await fetch(request, {
       method: "POST",
@@ -255,6 +255,116 @@ async function getRootFolderID(username, password, repoName, branchName) {
   }
 }
 
+//for divisionGet
+async function getUniversalRepos() {
+  var request = reqPath.concat("divisionGet");
+  try {
+    const response = await fetch(request);
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    // console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postProjectionReq(selectedIds) {
+  var request = reqPath.concat("projection");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'selectedIds': selectedIds})
+    });
+    const resJSON = await response.json();
+    return {headers: selectedIds, table: resJSON.rows};
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postAggNormReq() {
+  var request = reqPath.concat("AggNorm");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postAggNestReq() {
+  var request = reqPath.concat("AggNest");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postAggHavReq(minRepos) {
+  var request = reqPath.concat("AggHav");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'minRepos': minRepos})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postDivisionReq(repoList) {
+  var request = reqPath.concat("divisionPost");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'repoList': repoList})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 
 async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFile");
@@ -324,10 +434,37 @@ async function addFolder(username, password, fileName, branchName, parentFolderI
     console.log(e);
     return false;
   }
+};
+
+async function getIssues(repo, filter) {
+  var request = reqPath.concat("getIssues");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        repo: repo,
+        filter: filter
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 }
 
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, 
+        getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, postAggHavReq, postDivisionReq, 
+        getIssues};
 
-
-
-
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder};
