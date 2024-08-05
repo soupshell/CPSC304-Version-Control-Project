@@ -1,10 +1,10 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {postProjectionReq} from "../controller/controller";
 
 
 function Projection(props) {
   const [selectedIds, setSelectedIds] = useState(["email", "id", "username", "datejoined" ]);
-  const [projectionData, setProjectionData] = useState([]);
+  const [projectionData, setProjectionData] = useState({headers: [], table: []});
   const handleCheckboxChange = (event) => {
       const checkedId = event.target.value;
       if(event.target.checked){
@@ -16,15 +16,28 @@ function Projection(props) {
    
   const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log('HANDEL SUBMIT CALLEd');
       const res = await postProjectionReq(selectedIds);
       if(res === false) {
         setProjectionData([]);
         return;
       }
-      setProjectionData(res.rows);
+      setProjectionData(res);
   }
+  
+  const projectionHeaders = []
+  const projectionTable = [];
+  Object.entries(projectionData['headers']).forEach(([key, value]) => {
+    projectionHeaders.push((<th>{value}</th>));
+  });
 
+  for (let i=0;i<projectionData['table'].length; i++){
+    let row = projectionData['table'][i];
+    let tablerow=[];
+    for (let j =0;j < row.length; j++) {
+      tablerow.push((<td>{row[j]}</td>));
+    }
+    projectionTable.push((<tr>{tablerow}</tr>));
+  }
 
    return (
       <div className="centerColDiv">
@@ -64,6 +77,10 @@ function Projection(props) {
             </thead>
         </table>
         <table id="projection-users" border="1">
+          <tr>
+          {projectionHeaders}
+          </tr>
+          {projectionTable}
         </table>
       </form>
       </div> 
