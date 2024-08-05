@@ -33,7 +33,9 @@ function App() {
         sessionStorage.setItem( 'isVerified', formValue['username']);
         sessionStorage.setItem('password', formValue['pwd']);
         setStatus(1);
-      } 
+      } else {
+        alert("wrong username and password");
+      }
     } catch (e) {
         console.log(e);
     }
@@ -54,7 +56,9 @@ function App() {
         sessionStorage.setItem('password', formValue['pwd']);
         sessionStorage.setItem('email', formValue['email']);
         setStatus(1);
-      } 
+      }  else {
+        alert("username or email already taken");
+      }
     } catch (e) {
         console.log(e);
     }

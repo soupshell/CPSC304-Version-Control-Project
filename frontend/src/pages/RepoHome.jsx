@@ -3,11 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getFilesAndFolders, getRootFolderID, addFile, addFolder} from "../controller/controller";
 import Modal from 'react-modal';
+import ContributorTable from "../components/ContributorTable";
 
 function RepoHome(props) {
   const params = useParams(); // access params.id
   const loggedInUser = sessionStorage.getItem("isVerified");
   const currentUserPassword = sessionStorage.getItem("password");
+  const repoName = params.Repo;
 
   const [popup, setPopUp] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -20,7 +22,7 @@ function RepoHome(props) {
 
   const [repoState, setRepoState] = useState(
     {
-      repoName: params.Repo,
+      repoName: repoName,
       currBranchName: "main",
       folders: [],
       files: [],
@@ -137,17 +139,7 @@ try{
        }}> Commit a file </button>
         </ul>
         <div >
-          <table border="1">
-            <thead>
-                <tr>
-                    <th>Contributor Username</th>
-                    <th>Permissions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {contributorRows}
-            </tbody>
-          </table>
+          <ContributorTable repoName = {repoName}> </ContributorTable>
           <br/>
           <Link className='ctgrey-button' to='Issues'>See issues for this Repo</Link>
         </div>
@@ -167,7 +159,6 @@ try{
         console.log(fileName, fileContent, currentFolderID);
         const res = await addFile(loggedInUser, currentUserPassword, fileName, fileContent, repoState.currBranchName, currentFolderID, repoState.repoName);
         if(res === false){
-          alert("file already exists!");
        } else {
          console.log(res);
          setCurrentFolderID(res.queryResult.rows[0][0]);
@@ -203,7 +194,6 @@ try{
        e.preventDefault()
        const res = await addFolder(loggedInUser, currentUserPassword, folderName, repoState.currBranchName, currentFolderID, repoState.repoName);
        if(res === false){
-         alert("folder  already exists!");
       } else {
         console.log(res);
         setCurrentFolderID(res.queryResult.rows[0][0]);

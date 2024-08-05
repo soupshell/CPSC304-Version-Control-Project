@@ -104,9 +104,7 @@ function FilePage(props) {
         </div>
       </div>
       <div style={{ padding: "20px" }}>
-        <ContributorTable contributors={fileState.contributors}>
-          {" "}
-        </ContributorTable>
+        <ContributorTable repoName={repoName}> </ContributorTable>
       </div>
     </div>
     )

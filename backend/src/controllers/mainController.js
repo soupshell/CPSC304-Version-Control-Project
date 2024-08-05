@@ -2,6 +2,41 @@
 const express = require('express');
 const oracle = require('./oracletest');
 
+async function testCredentialsRepo(connection, username, password, repoName){
+   const hasAccess = await connection.execute(` 
+      SELECT Count(*)
+      FROM Users2 u2, UserContributesTo uc, Repo r, Permissions p, Users1 u1
+      WHERE u2.id = uc.userid
+      AND u2.email = u1.email
+      AND r.id = uc.repoid
+      AND p.permissions = uc.permissions
+      AND (p.READWRITE = 'READ' OR p.READWRITE = 'WRITE')
+      AND u2.username = :username
+      AND u1.hashPassword = :password
+      AND r.name = :repoName
+     `,{username: username, password:password, repoName: repoName});
+     return hasAccess.rows[0][0];
+}
+
+async function testCredentialsRepoOwner(connection, username, password, repoName){
+   const hasAccess = await connection.execute(` 
+      SELECT Count(*)
+      FROM Users2 u2, UserContributesTo uc, Repo r, Permissions p, Users1 u1
+      WHERE u2.id = uc.userid
+      AND u2.email = u1.email
+      AND r.id = uc.repoid
+      AND p.permissions = uc.permissions
+      AND (p.READWRITE = 'READ' OR p.READWRITE = 'WRITE')
+      AND p.isOwner = '1'
+      AND u2.username = :username
+      AND u1.hashPassword = :password
+      AND r.name = :repoName
+     `,{username: username, password:password, repoName: repoName});
+
+     return hasAccess.rows[0][0];
+}
+
+
 async function testOracle(req, res) {
    try {
       const result = await oracle.testOracleConnection();
@@ -92,10 +127,25 @@ async function addUserToDB(req, res) {
       console.log(username, password, email);
 
       if (username === null || password === null || email === null) {
-         res.sendStatus(400).send("empty username, password or email");
+         return res.status(400).send("empty username, password or email");
+      }
+      
+      await oracle.withOracleDB(async (connection) => {
+
+
+      const alreadyExists = await connection.execute(`
+         SELECT Count(*)
+         FROM  Users2 u2
+         WHERE u2.email = :email 
+         OR u2.username = :username
+      `, { username: username, email: email});
+
+
+      if(alreadyExists){
+        return res.sendStatus(400).send("username or email already in taken");
       }
 
-      await oracle.withOracleDB(async (connection) => {
+
          const result = await connection.execute(`
       DECLARE
         var_count INTEGER;
@@ -111,12 +161,87 @@ async function addUserToDB(req, res) {
             `, { username: username, password:password, email: email});
 
             console.log(result);
-            res.json({ validLogin: true });
+           return  res.json({ validLogin: true });
+      });
+   } catch (e) {
+      return res.sendStatus(200).send(e.error);
+   }
+}
+
+
+async function addUserToRepo(req, res) {
+   try {
+      const username = req.body.username;
+      const password = req.body.password;
+      const repoName = req.body.repoName;
+      const otherUser = req.body.otherUser;
+      const permissions = req.body.permissions;
+      console.log(username, password, repoName, otherUser, permissions);
+
+      if (username === null || password === null || repoName === null|| otherUser === null || permissions === null) {
+        return res.status(400).send("empty username, password or email");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+      const hasAccess = await testCredentialsRepoOwner(connection, username, password, repoName);
+       if(!hasAccess){
+             console.log(username, " is not an owner of the repo");
+             return res.status(200).send("no access");
+           }
+
+       const result = await connection.execute(`
+      DECLARE
+        var_otherID INTEGER;
+        var_repoID INTEGER;
+        var_permissions INTEGER;
+      BEGIN
+        SELECT permissions INTO var_permissions FROM Permissions WHERE readWrite = :permissions AND isOwner = 0;
+        SELECT id INTO var_otherID FROM Users2 WHERE Username = :otherUser;
+        SELECT id INTO var_repoID FROM Repo WHERE name = :repoName;
+        INSERT INTO UserContributesTo(userid,repoid, permissions) VALUES (var_otherID, var_repoID, var_permissions);
+        COMMIT;
+      END;
+            `, { repoName: repoName, otherUser: otherUser, permissions: permissions});
+
+            console.log(result);
+            return res.json({ validLogin: true, queryResult : {}});
+      });
+   } catch (e) {
+      console.log(e);
+      return res.sendStatus(200).send(e.error);
+   }
+}
+
+
+async function getAllContributors(req, res) {
+
+   try {
+      const repoName = req.body.repoName;
+
+      if (repoName == null) {
+         res.sendStatus(400).send("no repo provided");
+      }
+
+      await oracle.withOracleDB(async (connection) => {
+       const result = await connection.execute(`
+      SELECT Username, isOwner, readWrite
+      FROM Users2 u2, UserContributesTo uc, Users1 u1, permissions p
+      WHERE u2.id = uc.userid
+      AND u2.email = u1.email
+      AND uc.permissions = p.permissions
+      AND uc.repoid = (SELECT id FROM REPO WHERE name = :repoName)
+      `, { repoName: repoName});
+
+      console.log(result);
+      
+      res.json({queryResult : result});
       });
    } catch (e) {
       res.sendStatus(400).send(e.error);
    }
 }
+
+
 
 
 async function createRepo(req, res) {
@@ -183,7 +308,6 @@ async function getRepos(req, res) {
          res.status(400).send("something went wrong");
       }
      
-
       // feel free to make this better lol
       await oracle.withOracleDB(async (connection) => {
          // u1 is owner, u2 is current user
@@ -274,4 +398,4 @@ async function getIssues(req, res) {
 }
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues};
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors};
