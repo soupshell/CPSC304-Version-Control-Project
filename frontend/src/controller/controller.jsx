@@ -329,6 +329,43 @@ async function postAggNestReq() {
   }
 }
 
+async function postAggHavReq(minRepos) {
+  var request = reqPath.concat("AggHav");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'minRepos': minRepos})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+async function postDivisionReq(repoList) {
+  var request = reqPath.concat("divisionPost");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({'repoList': repoList})
+    });
+    const resJSON = await response.json();
+    return resJSON.rows;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+
 async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFile");
   try {
@@ -422,4 +459,6 @@ async function getIssues(repo, filter) {
 }
 
 export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, 
-        getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, getIssues};
+        getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, postAggHavReq, postDivisionReq, 
+        getIssues};
+

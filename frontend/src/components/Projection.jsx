@@ -77,10 +77,12 @@ function Projection(props) {
             </thead>
         </table>
         <table id="projection-users" border="1">
-          <tr>
-          {projectionHeaders}
-          </tr>
+          <thead>
+            <tr>{projectionHeaders}</tr>
+          </thead>
+          <tbody>
           {projectionTable}
+          </tbody>
         </table>
       </form>
       </div> 

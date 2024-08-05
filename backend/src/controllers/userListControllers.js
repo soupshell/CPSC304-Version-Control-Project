@@ -22,22 +22,22 @@ async function divisionGet(req, res) {
 async function divisionPost(req, res) {
     try {
       const repoList = req.body.repoList;
-      console.log(repoList);
-      const repoListString = repoList.join(", ");
-
-      if (repoListString) {
-         res.status(400).send("No repos selected");
+      
+      if (repoList.length == 0) {
+         return false;
       }
 
+      const repoListString = repoList.join(", ");
+      console.log(repoListString);
+
       await oracle.withOracleDB(async (connection) => {
-         // u1 is owner, u2 is current user
          const result = await connection.execute(`
             SELECT u2.username
             FROM Users2 u2
             WHERE NOT EXISTS
-               ((SELECT id
+               ((SELECT repoid
                FROM UserContributesTo u_r1
-               WHERE ID in (:listofRepoString))
+               WHERE repoid in (:listofRepoString))
                minus
                (SELECT u_r2.repoid
                FROM UserContributesTo u_r2
@@ -46,7 +46,7 @@ async function divisionPost(req, res) {
             `, {listofRepoString: repoListString});
 
             console.log(result);
-            res.json({queryResult: result});
+            res.json(result);
       });
    } catch (e) {
       res.status(400).send(e.error);
@@ -96,7 +96,7 @@ async function query_AggNest(req, res) {
 
 async function query_AggHav(req, res) {
    try {
-      const minRepos = Math.max(1, req.body.repos);
+      const minRepos = Math.max(1, req.body.minRepos);
       
       await oracle.withOracleDB(async (connection) => {
         const result = await connection.execute(`
@@ -104,7 +104,7 @@ async function query_AggHav(req, res) {
             from Users2 u2, UserContributesTo u_r 
             where u2.id = u_r.userid 
             group by u2.username 
-            having count(unique u_r.repoid) > :minRepos 
+            having count(unique u_r.repoid) >= :minRepos 
            `, {minRepos: minRepos});
 
            console.log(result);
@@ -120,9 +120,11 @@ async function query_AggNorm(req, res) {
       await oracle.withOracleDB(async (connection) => {
         const result = await connection.execute(`
             select u2.username, count(unique u_r.repoid) as "Repo Count", listagg(r.name, ', ') as "Reponames"
-            from Users2 u2, UserContributesTo u_r, Repo r
-            where u2.id = u_r.userid 
-            and u_r.repoid = r.id
+            from Users2 u2
+            left join UserContributesTo u_r
+            on u2.id = u_r.userid 
+            left join Repo r
+            on u_r.repoid = r.id
             group by u2.username
          `);
 
