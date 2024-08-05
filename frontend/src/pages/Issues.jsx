@@ -3,6 +3,7 @@ import IssueLinkBox from "../components/IssueLinkBox";
 import { useParams, Link } from "react-router-dom";
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { getIssues } from "../controller/controller";
 
 function Issues(props) { 
     //we redirect here from a RepoHome page, so the ID is passed along

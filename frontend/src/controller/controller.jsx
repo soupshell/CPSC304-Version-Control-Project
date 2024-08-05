@@ -368,7 +368,6 @@ async function postDivisionReq(repoList) {
 
 async function addFile(username, password, fileName, fileContent, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFile");
-
   try {
     const response = await fetch(request, {
       method: "POST",
@@ -382,7 +381,7 @@ async function addFile(username, password, fileName, fileContent, branchName, pa
         branchName: branchName,
         fileName: fileName,
         fileContent: fileContent,
-        parentFolderID: parentFolderID
+        parentFolderID: parentFolderID,
       }),
     });
 
@@ -403,8 +402,6 @@ async function addFile(username, password, fileName, fileContent, branchName, pa
 
 async function addFolder(username, password, fileName, branchName, parentFolderID, repoName) {
   var request = reqPath.concat("createFolder");
-  console.log(typeof(username), typeof(password), typeof(fileName), typeof(branchName), typeof(parentFolderID), typeof(repoName));
-  console.log(request);
   try {
     const response = await fetch(request, {
       method: "POST",
@@ -417,8 +414,7 @@ async function addFolder(username, password, fileName, branchName, parentFolderI
         repoName: repoName,
         branchName: branchName,
         fileName: fileName,
-        fileContent: "",
-        parentFolderID: parentFolderID
+        parentFolderID: parentFolderID,
       }),
     });
 
