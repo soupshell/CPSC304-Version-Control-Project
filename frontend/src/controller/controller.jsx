@@ -28,7 +28,7 @@ async function queryDB(str) {
 }
 
 async function userLogin(username, password) {
-  const request = "http://localhost:59000/login";
+  const request = reqPath.concat("login");
   try {
     const response = await fetch(request, {
       method: "POST",
@@ -255,9 +255,29 @@ async function getRootFolderID(username, password, repoName, branchName) {
   }
 }
 
+//for division
+async function getUniversalRepos() {
+  var request = reqPath.concat("divisionGet");
+  try {
+    const response = await fetch(request);
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    // console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
 
 
 
 
-
-export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID};
+export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID,
+        getUniversalRepos
+};
