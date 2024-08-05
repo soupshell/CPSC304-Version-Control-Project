@@ -22,22 +22,22 @@ async function divisionGet(req, res) {
 async function divisionPost(req, res) {
     try {
       const repoList = req.body.repoList;
-      console.log(repoList);
-      const repoListString = repoList.join(", ");
-
-      if (repoListString) {
-         res.status(400).send("No repos selected");
+      
+      if (repoList.length == 0) {
+         return false;
       }
 
+      const repoListString = repoList.join(", ");
+      console.log(repoListString);
+
       await oracle.withOracleDB(async (connection) => {
-         // u1 is owner, u2 is current user
          const result = await connection.execute(`
             SELECT u2.username
             FROM Users2 u2
             WHERE NOT EXISTS
-               ((SELECT id
+               ((SELECT repoid
                FROM UserContributesTo u_r1
-               WHERE ID in (:listofRepoString))
+               WHERE repoid in (:listofRepoString))
                minus
                (SELECT u_r2.repoid
                FROM UserContributesTo u_r2
@@ -46,7 +46,7 @@ async function divisionPost(req, res) {
             `, {listofRepoString: repoListString});
 
             console.log(result);
-            res.json({queryResult: result});
+            res.json(result);
       });
    } catch (e) {
       res.status(400).send(e.error);

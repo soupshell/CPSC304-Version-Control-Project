@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {postDivisionReq} from "../controller/controller";
 
 // const repos = [
 //   [ 1, "NON REMOTE" ],
@@ -10,6 +11,7 @@ import {useState} from 'react';
 //props = {repolist=[list of repos]}
 function Division(props) {
    const [selectedIds, setSelectedIds] = useState([]);
+   const [usersFromDivision, setUsersFromDivision] = useState([]);
    const handleCheckboxChange = (event) => {
       const checkedId = event.target.value;
       if(event.target.checked){
@@ -19,9 +21,14 @@ function Division(props) {
       }
    }
    
-   const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log(selectedIds);
+      const res = await postDivisionReq(selectedIds);
+      if(res === false) {
+         setUsersFromDivision([]);
+         return;
+       }
+       setUsersFromDivision(res);
    }
    
 
@@ -33,6 +40,11 @@ function Division(props) {
       </label>
     )));
 
+
+   const tableData = [];
+   usersFromDivision.forEach((value, index) => {
+      tableData.push(<tr><td>{value}</td></tr>)
+   });
 
    return (
      <div className="divisionDivider">
@@ -51,6 +63,7 @@ function Division(props) {
                 </tr>
             </thead>
             <tbody>
+            {tableData}
             </tbody>
         </table>
       </div>  
