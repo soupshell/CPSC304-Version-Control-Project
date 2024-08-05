@@ -100,14 +100,6 @@ function IssuePage(props) {
       }
     }
 
-    async function markResolved() {
-      //
-    }
-
-    async function markUnresolved() {
-      //
-    }
-
     useEffect(() => {
       fetchComments();
       fetchIssue();

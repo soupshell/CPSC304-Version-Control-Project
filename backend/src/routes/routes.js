@@ -31,6 +31,7 @@ router.post("/getContributors", getAllContributors);
 router.post("/addUserToRepo", addUserToRepo);
 router.post("/getIssue", getIssue);
 router.post("/getComments", getComments);
+router.post("/setResolved", setResolved);
 
 
 router.post("/projection", projectionPost);

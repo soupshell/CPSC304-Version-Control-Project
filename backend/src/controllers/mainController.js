@@ -463,4 +463,4 @@ async function setResolved(req, res) {
 
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue};
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue, setResolved};
