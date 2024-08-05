@@ -105,7 +105,7 @@ async function addUserToDB(req, res) {
         SELECT COUNT(*) + 1 INTO var_count FROM Users2;
         INSERT INTO Users1(email, hashPassword) VALUES (:email, :password);
         INSERT INTO Users2(id, username, dateJoined, email) 
-        VALUES (var_count, :username, TO_DATE(var_date, 'yyyy/mm/dd'), :email);
+        VALUES (var_count, :username, var_date, :email);
         COMMIT;
       END;
             `, { username: username, password:password, email: email});

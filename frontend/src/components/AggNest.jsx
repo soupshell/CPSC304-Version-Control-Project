@@ -7,16 +7,17 @@ function AggNest(props) {
   useEffect(() => {
    async function getData() {
       const data = await postAggNestReq();
-      setAggNestData(data);
+      setAggNestData(data[0]);
    }
    getData();
   }, []);
 
-
+console.log(aggNestData);
    return (
       <div className="centerColDiv">
       <h2>AggNest</h2>
-      <p>The most recently joined user is {aggNestData}</p>
+      {aggNestData.length >= 2 && 
+         <p>The most recently joined user is {aggNestData[0]} and their repo count is {aggNestData[1]}</p>}
       </div> 
    )
  }

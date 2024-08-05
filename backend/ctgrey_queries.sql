@@ -41,9 +41,14 @@ group by u2.username
 having count(unique u_r.repoid) > 1 ;
 
 --UserList: AGGNEST
-select u2.username 
+select u2.username, count(unique r.id)
 from Users2 u2
-where u2.dateJoined >= ALL (select dateJoined from Users2)
+left join UserContributesTo u_r
+on u2.id = u_r.userid 
+left join Repo r
+on u_r.repoid = r.id
+where u2.dateJoined <= ALL (select dateJoined from Users2)
+group by u2.username
 ;
 
 -- UserList: DIVISION
