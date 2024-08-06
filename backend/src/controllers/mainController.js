@@ -429,7 +429,7 @@ async function getIssue(req, res) {
          const result = await connection.execute(`
             SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
             from Issues i
-            where i.issueId = :issueid`, {issueid: issueid});
+            where i.id = :issueid`, {issueid: issueid});
 
          console.log(result);
          res.json({queryResult: result});
