@@ -360,7 +360,7 @@ async function getIssues(req, res) {
                from Issues i, Repo r
                where r.name = :reponame
                and r.id = i.repoID
-               and i.dateResolved = NULL`, {reponame: reponame});
+               and i.dateResolved is NULL`, {reponame: reponame});
 
          } else if (filter == "resolved asc") {
             result = await connection.execute(`
@@ -368,7 +368,7 @@ async function getIssues(req, res) {
                from Issues i, Repo r
                where r.name = :reponame 
                and r.id = i.repoID
-               and i.dateResolved is NULL
+               and i.dateResolved is not NULL
                order by i.dateResolved asc`, {reponame: reponame});
 
          } else if (filter == "resolved desc") {
@@ -377,7 +377,7 @@ async function getIssues(req, res) {
                from Issues i, Repo r
                where r.name = :reponame
                and r.id = i.repoID
-               and i.dateResolved is NULL
+               and i.dateResolved is not NULL
                order by i.dateResolved desc`, {reponame: reponame});
 
          } else { //default
