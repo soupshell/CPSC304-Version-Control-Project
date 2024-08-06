@@ -6,6 +6,8 @@ import RepoHome from './pages/RepoHome';
 import UsersList from './pages/UsersList';
 import FilePage from './pages/FilesPage.jsx'
 import Issues from './pages/Issues.jsx';
+import NewComment from './pages/NewComment.jsx';
+import NewIssue from './pages/NewIssue.jsx';
 import './App.css';
 import TesterPage from "./pages/SQLTester.jsx";
 import {userLogin, userSignup} from "./controller/controller.jsx"
