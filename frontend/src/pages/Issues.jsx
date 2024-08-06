@@ -13,9 +13,6 @@ function Issues(props) {
     const params = useParams(); // access params.id
     const user = params.User;
     const repo = params.Repo;
-
-    console.log(user,repo);
-
     const [issues, setIssues] = useState([]);
 
     //pretend this is every issue from the table, and that it's been queried
@@ -87,9 +84,9 @@ function Issues(props) {
           <h2>
             Repo <i>{repo}</i>'s Issues Page
           </h2>
-          <button onClick={fetchIssues("unresolved")}>Select Unresolved</button>
-          <button onClick={fetchIssues("resolved asc")}>Select Resolved by date (ascending)</button>
-          <button onClick={fetchIssues("resolved desc")}>Select Resolved by date (descending)</button>
+          <button onClick={() => fetchIssues("unresolved")}>Select Unresolved</button>
+          <button onClick={() => fetchIssues("resolved asc")}>Select Resolved by date (ascending)</button>
+          <button onClick={() => fetchIssues("resolved desc")}>Select Resolved by date (descending)</button>
         </div>
         <div className="centerDiv">
           <ul className='centerColDiv'>
