@@ -659,7 +659,35 @@ async function makeComment(commenttext, userid, time, issueid) {
   }
 }
 
+async function makeIssue(text, repoid) {
+  var request = reqPath.concat("makeIssue");
+  try {
+    const response = await fetch(request, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ repoName: repoName,
+        text: text,
+        repoid: repoid
+      }),
+    });
+
+    if (!response.ok) {
+      console.log(await response.text());
+      return false;
+    }
+    
+    const resJSON = await response.json()
+    console.log(resJSON);
+    return resJSON;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 export {userLogin, queryDB, userSignup, checkAccess, getFileContent, createRepo, getRepos, getFilesAndFolders, getRootFolderID, addFile, addFolder, 
         getUniversalRepos, postProjectionReq, postAggNormReq, postAggNestReq, postAggHavReq, postDivisionReq, 
-        getIssues, getContributors, addUserToRepo, getIssue, getComments, setResolved, deleteIssue, makeComment};
+        getIssues, getContributors, addUserToRepo, getIssue, getComments, setResolved, deleteIssue, makeComment, makeIssue};
 

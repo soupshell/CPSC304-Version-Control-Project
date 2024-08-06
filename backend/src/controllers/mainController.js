@@ -508,9 +508,32 @@ async function makeComment(req, res) {
    }
 }
 
+async function makeIssue(req, res) {
+   try {
+      const text = req.body.text;
+      const repoid = req.body.repoid;
 
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        var_issueID INTEGER;
+      BEGIN
+        SELECT MAX(id) + 1 INTO var_issueID FROM Issues;
+        INSERT INTO Issues(id, description, dateResolved, repoID)
+        VALUES (var_issueID, :text, NULL, :repoid)
+        COMMIT;
+      END;
+            `, {text: text, repoid: repoid});
+
+            console.log(result);
+            return  res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      return res.status(400).send(e.error);
+   }
+}
 
 module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, 
    checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, 
    getAllContributors, getComments, getIssue, setResolved, deleteIssue, 
-   makeComment};
+   makeComment, makeIssue};

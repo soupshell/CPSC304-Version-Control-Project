@@ -34,6 +34,7 @@ router.post("/getComments", getComments);
 router.post("/setResolved", setResolved);
 router.post("/deleteIssue", deleteIssue);
 router.post("/makeComment", makeComment);
+router.post("/makeIssue", makeIssue);
 
 
 router.post("/projection", projectionPost);
