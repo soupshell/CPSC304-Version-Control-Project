@@ -427,7 +427,7 @@ async function getIssue(req, res) {
       await oracle.withOracleDB(async (connection) => {
 
          const result = await connection.execute(`
-            SELECT DISTINCT i.id, i.desc, i.dateResolved, i.repoID
+            SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
             from Issues i
             where i.issueId = :issueid`, {issueid: issueid});
 
