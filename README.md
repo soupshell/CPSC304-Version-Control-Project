@@ -1,5 +1,8 @@
 # CPSC 304 Project Breakdown #
 
+## MILESTONE 4 Update ##
+Please go into milestones/Milestone 4.pdf to see the pdf
+
 ## Group Members ##
 * l0t3a
 * s1i9f
