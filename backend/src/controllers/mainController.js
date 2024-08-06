@@ -441,17 +441,20 @@ async function getIssue(req, res) {
 
 async function setResolved(req, res) {
    try {
-
-      const date = req.body.date;
       const issueid = req.body.issueid;
 
       await oracle.withOracleDB(async (connection) => {
 
          const result = await connection.execute(`
-            UPDATE Issues
-            set dateResolved = :date
-            where i.id = :issueid
-            COMMIT;`, {date: date, issueid: issueid});
+            DECLARE
+            var_date DATE;
+            BEGIN
+            SELECT CURRENT_DATE INTO var_date FROM DUAL;
+            UPDATE Issues i
+            set dateResolved = var_date
+            where i.id = :issueid;
+            COMMIT;
+            END;`, {issueid: issueid});
 
          console.log(result);
          res.json({queryResult: result});

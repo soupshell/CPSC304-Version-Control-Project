@@ -134,9 +134,8 @@ function IssuePage(props) {
               await fetchIssue();
             }}>Mark Resolved</button>
 
-            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`} onClick={(e) => {
-              e.preventDefault();
-              const res = deleteIssue(issueid);
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`} onClick={() => {
+              deleteIssue(issueid);
             }}>
                 Delete this issue
             </Link>

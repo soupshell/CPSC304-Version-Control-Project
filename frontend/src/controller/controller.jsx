@@ -583,7 +583,6 @@ async function setResolved(date, issueid) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        date: date,
         issueid: issueid
       }),
     });
