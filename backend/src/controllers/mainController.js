@@ -368,7 +368,7 @@ async function getIssues(req, res) {
                from Issues i, Repo r
                where r.name = :reponame 
                and r.id = i.repoID
-               and i.dateResolved <> NULL
+               and i.dateResolved is NULL
                order by i.dateResolved asc`, {reponame: reponame});
 
          } else if (filter == "resolved desc") {
@@ -377,7 +377,7 @@ async function getIssues(req, res) {
                from Issues i, Repo r
                where r.name = :reponame
                and r.id = i.repoID
-               and i.dateResolved <> NULL
+               and i.dateResolved is NULL
                order by i.dateResolved desc`, {reponame: reponame});
 
          } else { //default
