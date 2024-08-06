@@ -121,22 +121,22 @@ function IssuePage(props) {
         <div>
         <div className="centerDiv">
           <h2>
-            Repo <i>{repoState["repoName"]}</i>'s Issues Page
+            Repo <i>{repo}</i>'s Issues Page
           </h2>
         </div>
         <div className="centerDiv">
           <div >
             <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-            <Button onClick={async (e) => { 
+            <button onClick={async (e) => { 
               const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
-            }}>Mark Resolved</Button>
-            <Button onClick={async (e) => {
+            }}>Mark Resolved</button>
+            <button onClick={async (e) => {
               const res = await deleteIssue(issueid);
               return (
                 <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
               );
-            }}>Delete this issue</Button>
+            }}>Delete this issue</button>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
@@ -166,11 +166,11 @@ function IssuePage(props) {
         <div className="centerDiv">
           <div >
             <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-            <Button onClick={async (e) => { 
+            <button onClick={async (e) => { 
               const res = await setResolved(null, issueid);
               await fetchIssue();
-            }}>Mark Unresolved</Button>
-            <Button>Delete this issue</Button>
+            }}>Mark Unresolved</button>
+            <button>Delete this issue</button>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
