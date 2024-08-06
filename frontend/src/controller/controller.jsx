@@ -629,7 +629,7 @@ async function deleteIssue(issueid) {
   }
 }
 
-async function makeComment(commenttext, userid, time, issueid) {
+async function makeComment(commenttext, username, time, issueid) {
   var request = reqPath.concat("makeComment");
   try {
     const response = await fetch(request, {
@@ -639,7 +639,7 @@ async function makeComment(commenttext, userid, time, issueid) {
       },
       body: JSON.stringify({ repoName: repoName,
         commenttext: commenttext,
-        userid: userid,
+        username: username,
         time: time,
         issueid: issueid
       }),

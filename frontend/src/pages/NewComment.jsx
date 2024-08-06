@@ -6,6 +6,8 @@ import { useParams, Link } from "react-router-dom";
 function NewComment(props) { 
     const {user, repo, issues} = useParams(); // access params.id
 
+    const loggedInUser = sessionStorage.getItem("isVerified");
+
     return (
         <>
             //textbox with a submit button
@@ -15,7 +17,7 @@ function NewComment(props) {
                 <p >{description}</p>
                 <form onSubmit={async (e) => {
                     const commenttext = formValues['comment'];
-                    const res = await makeComment(commenttext, user, new Date().toLocaleTimeString, issues);
+                    const res = await makeComment(commenttext, loggedInUser, new Date().toLocaleTimeString, issues);
                     alert("comment added successfully!");
                 }}>
                     <label> Comment:

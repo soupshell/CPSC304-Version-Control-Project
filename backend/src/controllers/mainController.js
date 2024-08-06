@@ -484,7 +484,7 @@ async function deleteIssue(req, res) {
 async function makeComment(req, res) {
    try {
       const text = req.body.commenttext;
-      const userID = req.body.userid;
+      const username = req.body.username;
       const time = req.body.time;
       const issueID = req.body.issueid;
 
@@ -492,13 +492,15 @@ async function makeComment(req, res) {
          const result = await connection.execute(`
       DECLARE
         var_commentID INTEGER;
+        var_userid INTEGER;
       BEGIN
         SELECT MAX(id) + 1 INTO var_commentID FROM Comments;
+        SELECT id INTO var_userid FROM Users WHERE username = :username;
         INSERT INTO Comments(id, userid, issueId, message, timePosted)
-        VALUES (var_commentID, :userID, :issueID, :text, :time)
+        VALUES (var_commentID, var_userid, :issueID, :text, :time)
         COMMIT;
       END;
-            `, {userID: userID, issueID: issueID, text: text, time: time});
+            `, {username: username, issueID: issueID, text: text, time: time});
 
             console.log(result);
             return  res.json({createdSuccess: true});
