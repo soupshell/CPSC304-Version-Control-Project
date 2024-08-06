@@ -75,7 +75,7 @@ function IssuePage(props) {
              'timePosted': timePosted,
              'username': username
           })
-        });
+          });
           setComments(comments);
           //console.log(result.queryResult);
         }
@@ -105,7 +105,6 @@ function IssuePage(props) {
       fetchComments();
       fetchIssue();
     }, []);
-
 
     //comment.userid is a replacement for username
 

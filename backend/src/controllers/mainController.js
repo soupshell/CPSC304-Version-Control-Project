@@ -408,7 +408,7 @@ async function getComments(req, res) {
             SELECT DISTINCT c.id, c.userid, c.issueId, c.message, c.timePosted, u.username
             from Comments c, Users2 u
             where c.issueId = :issueid
-            and c.userid = u.userid,
+            and c.userid = u.id
             order by timePosted asc`, {issueid: issueid});
 
          console.log(result);
