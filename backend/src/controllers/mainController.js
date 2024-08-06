@@ -352,41 +352,41 @@ async function getIssues(req, res) {
 
       await oracle.withOracleDB(async (connection) => {
 
-         const result = null;
+         let result = null;
       
          if (filter == "unresolved") {
             result = await connection.execute(`
                SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
                from Issues i, Repo r
-               where r.name = :reponame, 
+               where r.name = :reponame
                and r.id = i.repoID
-               and i.dateResolved = NULL;`, {reponame: reponame});
+               and i.dateResolved is NULL`, {reponame: reponame});
 
          } else if (filter == "resolved asc") {
             result = await connection.execute(`
                SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
                from Issues i, Repo r
-               where r.name = :reponame, 
-               and r.id = i.repoID,
-               and i.dateResolved <> NULL
-               order by i.dateResolved asc;`, {reponame: reponame});
+               where r.name = :reponame 
+               and r.id = i.repoID
+               and i.dateResolved is not NULL
+               order by i.dateResolved asc`, {reponame: reponame});
 
          } else if (filter == "resolved desc") {
             result = await connection.execute(`
                SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
                from Issues i, Repo r
-               where r.name = :reponame, 
+               where r.name = :reponame
                and r.id = i.repoID
-               and i.dateResolved <> NULL
-               order by i.dateResolved desc;`, {reponame: reponame});
+               and i.dateResolved is not NULL
+               order by i.dateResolved desc`, {reponame: reponame});
 
          } else { //default
             result = await connection.execute(`
                SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
                from Issues i, Repo r
-               where r.name = :reponame, 
+               where r.name = :reponame
                and r.id = i.repoID
-               order by i.dateResolved asc;`, {reponame: reponame});
+               order by i.dateResolved asc`, {reponame: reponame});
          }
 
             console.log(result);
@@ -407,9 +407,9 @@ async function getComments(req, res) {
          const result = await connection.execute(`
             SELECT DISTINCT c.id, c.userid, c.issueId, c.message, c.timePosted, u.username
             from Comments c, Users2 u
-            where c.issueId = :issueid, 
+            where c.issueId = :issueid
             and c.userid = u.userid,
-            order by timePosted asc;`, {issueid: issueid});
+            order by timePosted asc`, {issueid: issueid});
 
          console.log(result);
          res.json({queryResult: result});
@@ -429,7 +429,7 @@ async function getIssue(req, res) {
          const result = await connection.execute(`
             SELECT DISTINCT i.id, i.desc, i.dateResolved, i.repoID
             from Issues i
-            where i.issueId = :issueid;`, {issueid: issueid});
+            where i.issueId = :issueid`, {issueid: issueid});
 
          console.log(result);
          res.json({queryResult: result});

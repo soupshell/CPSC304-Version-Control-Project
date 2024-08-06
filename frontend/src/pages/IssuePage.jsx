@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 
 function IssuePage(props) { 
     //then, query for all the Issues with foreign key repoid = param repoID
-
     const {user, repo, issues} = useParams(); // access params.id
 
     const [issueid, setIssueID] = useState(issues);

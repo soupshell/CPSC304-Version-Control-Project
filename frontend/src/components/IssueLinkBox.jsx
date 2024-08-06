@@ -11,7 +11,7 @@ function IssueLinkBox(props) {
    const issue = props.issueInfo; 
    
    return (
-     <Link to={'/' + issue.id}>
+     <Link to= {'' + issue.id}>
       <div className='ctgrey-button'>
          <p>{issue['description']}</p>
          <p>{issue['dateResolved']}</p>

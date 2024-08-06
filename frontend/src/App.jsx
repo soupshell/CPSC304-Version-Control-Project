@@ -6,6 +6,9 @@ import RepoHome from './pages/RepoHome';
 import UsersList from './pages/UsersList';
 import FilePage from './pages/FilesPage.jsx'
 import Issues from './pages/Issues.jsx';
+import IssuePage from './pages/IssuePage.jsx';
+import NewComment from './pages/NewComment.jsx';
+import NewIssue from './pages/NewIssue.jsx';
 import './App.css';
 import TesterPage from "./pages/SQLTester.jsx";
 import {userLogin, userSignup} from "./controller/controller.jsx"
@@ -76,7 +79,7 @@ function App() {
             <Route path = "/:User/:Repo/:FileID" element = {isVerified != 0 ? <FilePage/>: <Login verifyFn={verify} signupFn = {signup} />}> </Route>
             <Route path = "/testSQL" element = {<TesterPage></TesterPage>}> </Route>
             <Route path = "/:User/:Repo/Issues" element = {isVerified != 0 ? <Issues/>: <Login verifyFn={verify}/>}> </Route>
-            <Route path = "/:User/:Repo/Issues/:Issues" element = {isVerified != 0 ? <FilePage/>: <Login verifyFn={verify}/>}> </Route>
+            <Route path = "/:User/:Repo/Issues/:Issues" element = {isVerified != 0 ? <IssuePage/>: <Login verifyFn={verify}/>}> </Route>
             <Route path = "/:User/:Repo/Issues/:Issues/New" element = {isVerified != 0 ? <NewComment/>: <Login verifyFn={verify}/>}> </Route>
             <Route path = "/:User/:Repo/Issues/New" element = {isVerified != 0 ? <NewIssue/>: <Login verifyFn={verify}/>}> </Route>
       </Routes>
