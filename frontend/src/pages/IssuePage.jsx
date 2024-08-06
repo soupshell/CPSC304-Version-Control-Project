@@ -58,6 +58,7 @@ function IssuePage(props) {
     async function fetchComments() {
       try {
         const result = await getComments(issueid);
+        console.log(result);
         if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
           const comments = []
            result.queryResult.rows.forEach((row) => {
@@ -131,12 +132,13 @@ function IssuePage(props) {
               const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
             }}>Mark Resolved</button>
-            <button onClick={async (e) => {
-              const res = await deleteIssue(issueid);
-              return (
-                <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>Go back to issues</Link>
-              );
-            }}>Delete this issue</button>
+
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>
+                <button onClick={async (e) => {
+                  const res = await deleteIssue(issueid);
+                }}>Delete this issue</button>
+            </Link>
+            
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>

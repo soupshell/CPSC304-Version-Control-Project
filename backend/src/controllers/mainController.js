@@ -469,9 +469,11 @@ async function deleteIssue(req, res) {
       await oracle.withOracleDB(async (connection) => {
 
          const result = await connection.execute(`
-            delete from Issues
-            where id = :issueid
-            COMMIT;`, {issueid: issueid});
+            BEGIN
+               delete from Issues
+               where id = :issueid;
+               COMMIT;
+            END;`, {issueid: issueid});
 
          console.log(result);
          res.json({queryResult: result});
