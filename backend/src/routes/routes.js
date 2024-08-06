@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, getAllContributors, addUserToRepo} = require("../controllers/mainController");
+const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, 
+  getIssues, getAllContributors, addUserToRepo,
+  getIssue, getComments, setResolved, deleteIssue, makeComment, makeIssue} = require("../controllers/mainController");
 const {getFileContents, getFilesAndFolders, getRootFolderID, createFile, createFolder} = require("../controllers/fileController");
 const {testReactConnection, divisionGet, divisionPost, projectionPost, query_AggNest, query_AggHav, query_AggNorm} = require("../controllers/userListControllers");
 
