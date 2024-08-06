@@ -6,9 +6,10 @@ import { useEffect } from 'react';
 
 function IssuePage(props) { 
     //then, query for all the Issues with foreign key repoid = param repoID
-    const {user, repo, issues} = useParams(); // access params.id
-
-    const [issueid, setIssueID] = useState(issues);
+    const {User, Repo, Issues} = useParams(); // access params.id
+    
+    const loggedInUser = sessionStorage.getItem("isVerified");
+    const [issueid, setIssueID] = useState(Issues);
     const [issuedesc, setIssueDesc] = useState("");
     const [issuedate, setIssueDate] = useState(null);
     const [repoid, setRepoid] = useState(0);
@@ -57,6 +58,7 @@ function IssuePage(props) {
     async function fetchComments() {
       try {
         const result = await getComments(issueid);
+        console.log(result);
         if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
           const comments = []
            result.queryResult.rows.forEach((row) => {
@@ -74,7 +76,7 @@ function IssuePage(props) {
              'timePosted': timePosted,
              'username': username
           })
-        });
+          });
           setComments(comments);
           //console.log(result.queryResult);
         }
@@ -85,7 +87,7 @@ function IssuePage(props) {
 
     async function fetchIssue() {
       try {
-        const result = await getIssue(issues);
+        const result = await getIssue(issueid);
         if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
           //const issues = []
            result.queryResult.rows.forEach((row) => {
@@ -105,7 +107,6 @@ function IssuePage(props) {
       fetchIssue();
     }, []);
 
-
     //comment.userid is a replacement for username
 
     const listItems = comments.map(comment => <li className='ctgrey-li'>
@@ -121,22 +122,24 @@ function IssuePage(props) {
         <div>
         <div className="centerDiv">
           <h2>
-            Repo <i>{repoState["repoName"]}</i>'s Issues Page
+            Repo <i>{Repo}</i>'s Issues Page
           </h2>
         </div>
         <div className="centerDiv">
           <div >
-            <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-            <Button onClick={async (e) => { 
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>Go back to issues</Link>
+            <button onClick={async (e) => { 
               const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
-            }}>Mark Resolved</Button>
-            <Button onClick={async (e) => {
-              const res = await deleteIssue(issueid);
-              return (
-                <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-              );
-            }}>Delete this issue</Button>
+            }}>Mark Resolved</button>
+
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  const res = deleteIssue(issueid);
+                }}>Delete this issue</button>
+            </Link>
+            
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
@@ -160,17 +163,21 @@ function IssuePage(props) {
         <div>
         <div className="centerDiv">
           <h2>
-            Repo <i>{repoState["repoName"]}</i>'s Issues Page
+            Repo <i>{Repo}</i>'s Issues Page
           </h2>
         </div>
         <div className="centerDiv">
           <div >
-            <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
-            <Button onClick={async (e) => { 
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>Go back to issues</Link>
+            <button onClick={async (e) => { 
               const res = await setResolved(null, issueid);
               await fetchIssue();
-            }}>Mark Unresolved</Button>
-            <Button>Delete this issue</Button>
+            }}>Mark Unresolved</button>
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}
+                onClick={() => {
+                    deleteIssue(issueid);}}>
+               Delete this issue
+            </Link>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
