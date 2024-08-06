@@ -499,7 +499,7 @@ async function makeComment(req, res) {
         SELECT MAX(id) + 1 INTO var_commentID FROM Comments;
         SELECT id INTO var_userid FROM Users WHERE username = :username;
         INSERT INTO Comments(id, userid, issueId, message, timePosted)
-        VALUES (var_commentID, var_userid, :issueID, :text, :time)
+        VALUES (var_commentID, var_userid, :issueID, :text, :time);
         COMMIT;
       END;
             `, {username: username, issueID: issueID, text: text, time: time});
@@ -524,7 +524,7 @@ async function makeIssue(req, res) {
       BEGIN
         SELECT MAX(id) + 1 INTO var_issueID FROM Issues;
         INSERT INTO Issues(id, description, dateResolved, repoID)
-        VALUES (var_issueID, :text, NULL, :repoid)
+        VALUES (var_issueID, :text, NULL, :repoid);
         COMMIT;
       END;
             `, {text: text, repoid: repoid});
@@ -537,7 +537,50 @@ async function makeIssue(req, res) {
    }
 }
 
+async function getComment(req, res) {
+   try {
+
+      const commentid = req.body.commentid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            SELECT DISTINCT c.userid, c.message, u.username
+            from Comments c, Users2 u
+            where c.id = :commentid
+            and c.userid = u.userid`, {commentid: commentid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
+async function updateComment(req, res) {
+   try {
+
+      const text = req.body.text;
+      const commentid = req.body.commentid;
+
+      await oracle.withOracleDB(async (connection) => {
+
+         const result = await connection.execute(`
+            UPDATE Comments
+            set message = :text
+            where c.id = :commentid;
+            COMMIT;`, {text: text, commentid: commentid});
+
+         console.log(result);
+         res.json({queryResult: result});
+      });
+   } catch (e) {
+      res.status(400).send(e.error);
+   }
+}
+
 module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, 
    checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, 
    getAllContributors, getComments, getIssue, setResolved, deleteIssue, 
-   makeComment, makeIssue};
+   makeComment, makeIssue, getComment, updateComment};

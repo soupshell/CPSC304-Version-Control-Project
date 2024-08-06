@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {checkLogin,testOracle,executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, 
   getIssues, getAllContributors, addUserToRepo,
-  getIssue, getComments, setResolved, deleteIssue, makeComment, makeIssue} = require("../controllers/mainController");
+  getIssue, getComments, setResolved, deleteIssue, makeComment, makeIssue, getComment, updateComment} = require("../controllers/mainController");
 const {getFileContents, getFilesAndFolders, getRootFolderID, createFile, createFolder} = require("../controllers/fileController");
 const {testReactConnection, divisionGet, divisionPost, projectionPost, query_AggNest, query_AggHav, query_AggNorm} = require("../controllers/userListControllers");
 
@@ -37,6 +37,8 @@ router.post("/setResolved", setResolved);
 router.post("/deleteIssue", deleteIssue);
 router.post("/makeComment", makeComment);
 router.post("/makeIssue", makeIssue);
+router.post("/updateComment", updateComment);
+router.post("/getComment", getComment);
 
 
 router.post("/projection", projectionPost);

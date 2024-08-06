@@ -81,6 +81,7 @@ function App() {
             <Route path = "/:User/:Repo/Issues" element = {isVerified != 0 ? <Issues/>: <Login verifyFn={verify}/>}> </Route>
             <Route path = "/:User/:Repo/Issues/:Issues" element = {isVerified != 0 ? <IssuePage/>: <Login verifyFn={verify}/>}> </Route>
             <Route path = "/:User/:Repo/Issues/:Issues/New" element = {isVerified != 0 ? <NewComment/>: <Login verifyFn={verify}/>}> </Route>
+            <Route path = "/:User/:Repo/Issues/:Issues/:Comments" element = {isVerified != 0 ? <UpdateComment/>: <Login verifyFn={verify}/>}> </Route>
             <Route path = "/:User/:Repo/Issues/New" element = {isVerified != 0 ? <NewIssue/>: <Login verifyFn={verify}/>}> </Route>
       </Routes>
       </div>
