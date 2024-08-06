@@ -134,8 +134,9 @@ function IssuePage(props) {
             }}>Mark Resolved</button>
 
             <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>
-                <button onClick={async (e) => {
-                  const res = await deleteIssue(issueid);
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  const res = deleteIssue(issueid);
                 }}>Delete this issue</button>
             </Link>
             
@@ -172,7 +173,12 @@ function IssuePage(props) {
               const res = await setResolved(null, issueid);
               await fetchIssue();
             }}>Mark Unresolved</button>
-            <button>Delete this issue</button>
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>
+                <button onClick={(e) => {
+                  e.preventDefault();
+                  const res = deleteIssue(issueid);
+                }}>Delete this issue</button>
+            </Link>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
           </div>
           <ul className='centerColDiv'>
