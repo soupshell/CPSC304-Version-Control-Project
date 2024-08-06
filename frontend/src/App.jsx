@@ -9,6 +9,7 @@ import Issues from './pages/Issues.jsx';
 import IssuePage from './pages/IssuePage.jsx';
 import NewComment from './pages/NewComment.jsx';
 import NewIssue from './pages/NewIssue.jsx';
+import UpdateComment from './pages/UpdateComment.jsx'
 import './App.css';
 import TesterPage from "./pages/SQLTester.jsx";
 import {userLogin, userSignup} from "./controller/controller.jsx"
