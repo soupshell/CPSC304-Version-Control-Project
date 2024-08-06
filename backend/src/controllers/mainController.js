@@ -548,7 +548,7 @@ async function getComment(req, res) {
             SELECT DISTINCT c.userid, c.message, u.username
             from Comments c, Users2 u
             where c.id = :commentid
-            and c.userid = u.userid`, {commentid: commentid});
+            and c.userid = u.userid;`, {commentid: commentid});
 
          console.log(result);
          res.json({queryResult: result});
