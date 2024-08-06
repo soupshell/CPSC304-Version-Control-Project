@@ -9,12 +9,23 @@ import {Link} from 'react-router-dom';
 
 function IssueLinkBox(props) {
    const issue = props.issueInfo; 
+
+   if (issue['dateResolved'] != null) {
+    return (
+      <Link to= {'' + issue.id}>
+       <div className='ctgrey-button'>
+          <p>{issue['description']}</p>
+          <p>Resolved On: {issue['dateResolved']}</p>
+       </div>
+      </Link>
+    );
+   }
    
    return (
      <Link to= {'' + issue.id}>
       <div className='ctgrey-button'>
          <p>{issue['description']}</p>
-         <p>{issue['dateResolved']}</p>
+         <p>Not Resolved</p>
       </div>
      </Link>
    );
