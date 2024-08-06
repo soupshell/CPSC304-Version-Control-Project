@@ -129,7 +129,7 @@ function IssuePage(props) {
           <div >
             <Link className='ctgrey-button' to={`/${user}/${repo}/Issues`}>Go back to issues</Link>
             <Button onClick={async (e) => { 
-              const res = await setResolved(new Date().toLocaleTimeString, issueid);
+              const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
             }}>Mark Resolved</Button>
             <Button onClick={async (e) => {

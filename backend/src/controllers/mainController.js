@@ -481,6 +481,36 @@ async function deleteIssue(req, res) {
    }
 }
 
+async function makeComment(req, res) {
+   try {
+      const text = req.body.commenttext;
+      const userID = req.body.userid;
+      const time = req.body.time;
+      const issueID = req.body.issueid;
+
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(`
+      DECLARE
+        var_commentID INTEGER;
+      BEGIN
+        SELECT MAX(id) + 1 INTO var_commentID FROM Comments;
+        INSERT INTO Comments(id, userid, issueId, message, timePosted)
+        VALUES (var_commentID, :userID, :issueID, :text, :time)
+        COMMIT;
+      END;
+            `, {userID: userID, issueID: issueID, text: text, time: time});
+
+            console.log(result);
+            return  res.json({createdSuccess: true});
+      });
+   } catch (e) {
+      return res.status(400).send(e.error);
+   }
+}
 
 
-module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, getAllContributors, getComments, getIssue, setResolved, deleteIssue};
+
+module.exports = { checkLogin, testOracle, executeSQL, addUserToDB, 
+   checkUserHasAccessToRepo, createRepo, getRepos, getIssues, addUserToRepo, 
+   getAllContributors, getComments, getIssue, setResolved, deleteIssue, 
+   makeComment};
