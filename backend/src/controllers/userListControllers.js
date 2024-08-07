@@ -28,22 +28,22 @@ async function divisionPost(req, res) {
       }
 
       const repoListString = repoList.join(", ");
-      console.log(repoListString);
-
-      await oracle.withOracleDB(async (connection) => {
-         const result = await connection.execute(`
+      let query = `
             SELECT u2.username
             FROM Users2 u2
             WHERE NOT EXISTS
                ((SELECT repoid
                FROM UserContributesTo u_r1
-               WHERE repoid in (:listofRepoString))
+               WHERE repoid in (` + repoListString + `))
                minus
                (SELECT u_r2.repoid
                FROM UserContributesTo u_r2
                WHERE u2.id = u_r2.userid))
+            `;
 
-            `, {listofRepoString: repoListString});
+      // console.log(query);
+      await oracle.withOracleDB(async (connection) => {
+         const result = await connection.execute(query);
 
             console.log(result);
             res.json(result);
