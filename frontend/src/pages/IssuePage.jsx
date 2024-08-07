@@ -1,5 +1,5 @@
 import RepoHeader from "../components/RepoHeader";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link} from "react-router-dom";
 import { getIssue, getComments, setResolved, deleteIssue} from "../controller/controller";
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -14,6 +14,7 @@ function IssuePage(props) {
     const [issuedate, setIssueDate] = useState(null);
     const [repoid, setRepoid] = useState(0);
     const [comments, setComments] = useState([]);
+    const [deleted, setdeleted] = useState(false);
 
    
 
@@ -117,6 +118,20 @@ function IssuePage(props) {
         <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues/${Issues}/${comment.id}`}>Edit this comment</Link>
     </li>);
 
+
+if(deleted){
+  return (
+    <div>
+      {" "}
+      <p style={{ color: "grey", fontSize: "40px" }}>
+        {" "}
+        Issue has been deleted
+        <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>Go back to issues</Link>
+      </p>{" "}
+    </div>
+  );
+}
+
     if (issuedate == null) {
       return (
         <>
@@ -135,9 +150,9 @@ function IssuePage(props) {
               const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
               if(res === false){
-                alert("Issue has been resolved");
+                alert("Issue coudlnt be resolved");
              } else {
-                alert("Coudlnt set as resolved");
+                alert("Issue resolved");
              }
             }}>Mark Resolved</button>
 
@@ -145,10 +160,11 @@ function IssuePage(props) {
               e.preventDefault();
               const res = await deleteIssue(issueid);
               if(res === false){
-               alert("Issue has been deleted");
-            } else {
                alert("Coudlnt delete issue");
+            } else {
+               alert("Issue has been deleted");
             }
+            setdeleted(true);
             }}>
                 Delete this issue
             </Link>
@@ -186,9 +202,9 @@ function IssuePage(props) {
               const res = await setResolved(null, issueid);
               await fetchIssue();
               if(res === false){
-                alert("Issue has been resolved");
-             } else {
                 alert("Coudlnt set as resolved");
+             } else {
+                alert("Issue resolved");
              }
             }}>Mark Unresolved</button>
             <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}
@@ -200,6 +216,7 @@ function IssuePage(props) {
                  } else {
                    alert("Issue has been deleted");
                  }
+                 setdeleted(true);
                  }}>
                Delete this issue
             </Link>
