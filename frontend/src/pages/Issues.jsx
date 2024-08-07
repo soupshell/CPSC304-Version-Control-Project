@@ -14,36 +14,18 @@ function Issues(props) {
     const user = params.User;
     const repo = params.Repo;
     const [issues, setIssues] = useState([]);
+    const [parameters, setParameters] = useState({
+      resolved: null,
+      order: null,
+      date: null
+    });
 
-    //pretend this is every issue from the table, and that it's been queried
-    //to select the ones with the repoID we want
-    
-    // const issuesData = [
-    //     {'id': 1,
-    //     'description': '123456789 123456789 123456789 123456789 1234567890',
-    //     'dateResolved': '12-31-2023',
-    //     'repoID': 1
-    //     },
-    //     {'id': 2,
-    //         'description': 'less than 50 but still long (2)',
-    //         'dateResolved': null, //issue is unresolved
-    //         'repoID': 1
-    //     },
-    //     {'id': 3,
-    //         'description': 'less long (3)',
-    //         'dateResolved': '12-30-2023',
-    //         'repoID': 1
-    //     },
-    //     {'id': 4,
-    //         'description': 'issue no 4',
-    //         'dateResolved': '02-07-2021',
-    //         'repoID': 1
-    //     },
-    // ];
-
-    async function fetchIssues(filter) {
+    async function fetchIssues(param) {
       try {
-        const result = await getIssues(repo, filter);
+        const resolved = param.resolved;
+        const order = param.order;
+        const date = param.date;
+        const result = await getIssues(repo, resolved, order, date);
         if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
           const issues = []
            result.queryResult.rows.forEach((row) => {
@@ -67,7 +49,11 @@ function Issues(props) {
     }
     
       useEffect(() => {
-        fetchIssues("");
+        fetchIssues({
+          resolved: "All",
+          order: null,
+          date: null
+        });
       }, []);
 
     //procedurally render all issues into buttons. 
@@ -84,9 +70,46 @@ function Issues(props) {
           <h2>
             Repo <i>{repo}</i>'s Issues Page
           </h2>
-          <button onClick={() => fetchIssues("unresolved")}>Select Unresolved</button>
-          <button onClick={() => fetchIssues("resolved asc")}>Select Resolved by date (ascending)</button>
-          <button onClick={() => fetchIssues("resolved desc")}>Select Resolved by date (descending)</button>
+
+          <form onSubmit={() => fetchIssues(parameters)}>
+          <label for="isresolved">Is Resolved:</label>
+
+          <select name="isresolved" id="resolvedOptions" 
+          onchange={(event) => setParameters({
+            resolved: event.target.value, 
+            order: parameters.order, 
+            date: parameters.date})}>
+            <option value="All">All</option>
+            <option value="Unresolved">Unresolved</option>
+            <option value="ResolvedA">Resolved (ascending)</option>
+            <option value="ResolvedD">Resolved (descending)</option>
+          </select> 
+
+          {((parameters.resolved == "ResolvedA") || (parameters.resolved == "ResolvedD")) 
+          && 
+          <>
+          <label for="order">Resolved Before</label>
+
+          <select name="order" id="order" onchange={(event) => setParameters({
+            resolved: parameters.resolved, 
+            order: event.target.value, 
+            date: parameters.date})}>
+            <option value="before">Before date</option>
+            <option value="after">After date</option>
+            <option value="on">On date</option>
+          </select>
+
+          <input type="date" id={'date'} onchange={(event) => setParameters({
+            resolved: parameters.resolved, 
+            order: parameters.order, 
+            date: event.target.value
+          })}></input>
+          </>
+          }
+
+          <input type="submit" value="Submit"></input>
+          </form>
+
         </div>
         <div className="centerDiv">
           <ul className='centerColDiv'>

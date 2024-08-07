@@ -348,45 +348,100 @@ async function getIssues(req, res) {
    try {
 
       const reponame = req.body.repo;
-      const filter = req.body.filter;
+      const resolved = req.body.resolved;
+      const order = req.body.order;
+      const date = req.body.date;
+
+      const datestring = date.toISOString().split('T')[0];
 
       await oracle.withOracleDB(async (connection) => {
 
          let result = null;
-      
-         if (filter == "unresolved") {
+
+         if (resolved == "All") {
+            result = await connection.execute(`
+               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+               from Issues i, Repo r
+               where r.name = :reponame
+               and r.id = i.repoID
+               order by i.dateResolved asc`, {reponame: reponame});
+         } else if (resolved == "Unresolved") {
             result = await connection.execute(`
                SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
                from Issues i, Repo r
                where r.name = :reponame
                and r.id = i.repoID
                and i.dateResolved is NULL`, {reponame: reponame});
+         } else if (filter == "ResolvedA") {
 
-         } else if (filter == "resolved asc") {
-            result = await connection.execute(`
-               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
-               from Issues i, Repo r
-               where r.name = :reponame 
-               and r.id = i.repoID
-               and i.dateResolved is not NULL
-               order by i.dateResolved asc`, {reponame: reponame});
+            if (!order || !date) {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved is not NULL
+                  order by i.dateResolved asc`, {reponame: reponame});
+            } else if (order == "on") {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved = to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved asc`, {reponame: reponame, datestring: datestring});   
+            } else if (order == "before") {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved < to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved asc`, {reponame: reponame, datestring: datestring});
+            } else {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved > to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved asc`, {reponame: reponame, datestring: datestring});
+            }
 
-         } else if (filter == "resolved desc") {
-            result = await connection.execute(`
-               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
-               from Issues i, Repo r
-               where r.name = :reponame
-               and r.id = i.repoID
-               and i.dateResolved is not NULL
-               order by i.dateResolved desc`, {reponame: reponame});
-
-         } else { //default
-            result = await connection.execute(`
-               SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
-               from Issues i, Repo r
-               where r.name = :reponame
-               and r.id = i.repoID
-               order by i.dateResolved asc`, {reponame: reponame});
+         } else {
+            if (!order || !date) {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved is not NULL
+                  order by i.dateResolved desc`, {reponame: reponame});
+            } else if (order == "on") {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved = to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved desc`, {reponame: reponame, datestring: datestring});   
+            } else if (order == "before") {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved < to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved desc`, {reponame: reponame, datestring: datestring});
+            } else {
+               result = await connection.execute(`
+                  SELECT DISTINCT i.id, i.description, i.dateResolved, i.repoID
+                  from Issues i, Repo r
+                  where r.name = :reponame 
+                  and r.id = i.repoID
+                  and i.dateResolved > to_date(:datestring, 'YYYY-MM-DD')
+                  order by i.dateResolved desc`, {reponame: reponame, datestring: datestring});
+            }
          }
 
             console.log(result);

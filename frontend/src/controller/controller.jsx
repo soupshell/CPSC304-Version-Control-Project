@@ -432,7 +432,7 @@ async function addFolder(username, password, fileName, branchName, parentFolderI
   }
 };
 
-async function getIssues(repo, filter) {
+async function getIssues(repo, resolved, order, date) {
   var request = reqPath.concat("getIssues");
   try {
     const response = await fetch(request, {
@@ -442,7 +442,9 @@ async function getIssues(repo, filter) {
       },
       body: JSON.stringify({
         repo: repo,
-        filter: filter
+        resolved: resolved,
+        order: order,
+        date: date
       }),
     });
 
