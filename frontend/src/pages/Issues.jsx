@@ -25,6 +25,7 @@ function Issues(props) {
         const resolved = param.resolved;
         const order = param.order;
         const date = param.date;
+        console.log(param);
         const result = await getIssues(repo, resolved, order, date);
         if(result && result.queryResult && Array.isArray(result.queryResult.rows)){
           const issues = []
@@ -71,14 +72,15 @@ function Issues(props) {
             Repo <i>{repo}</i>'s Issues Page
           </h2>
 
-          <form onSubmit={() => fetchIssues(parameters)}>
+          <form onSubmit={(e) => {e.preventDefault(); 
+                                  fetchIssues(parameters);}}>
           <label for="isresolved">Is Resolved:</label>
 
           <select name="isresolved" id="resolvedOptions" 
-          onchange={(event) => setParameters({
+          onChange={(event) => {setParameters({
             resolved: event.target.value, 
             order: parameters.order, 
-            date: parameters.date})}>
+            date: parameters.date})}}>
             <option value="All">All</option>
             <option value="Unresolved">Unresolved</option>
             <option value="ResolvedA">Resolved (ascending)</option>
@@ -90,16 +92,18 @@ function Issues(props) {
           <>
           <label for="order">Resolved Before</label>
 
-          <select name="order" id="order" onchange={(event) => setParameters({
+          <select name="order" id="order" onChange={(event) => {
+            setParameters({
             resolved: parameters.resolved, 
             order: event.target.value, 
-            date: parameters.date})}>
+            date: parameters.date})
+          }}>
             <option value="before">Before date</option>
             <option value="after">After date</option>
             <option value="on">On date</option>
           </select>
 
-          <input type="date" id={'date'} onchange={(event) => setParameters({
+          <input type="date" id='date' onChange={(event) => setParameters({
             resolved: parameters.resolved, 
             order: parameters.order, 
             date: event.target.value

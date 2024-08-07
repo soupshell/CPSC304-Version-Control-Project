@@ -352,7 +352,8 @@ async function getIssues(req, res) {
       const order = req.body.order;
       const date = req.body.date;
 
-      const datestring = date.toISOString().split('T')[0];
+      console.log(req.body);
+      const datestring = date;// && date.toISOString().split('T')[0];
 
       await oracle.withOracleDB(async (connection) => {
 
@@ -372,7 +373,7 @@ async function getIssues(req, res) {
                where r.name = :reponame
                and r.id = i.repoID
                and i.dateResolved is NULL`, {reponame: reponame});
-         } else if (filter == "ResolvedA") {
+         } else if (resolved == "ResolvedA") {
 
             if (!order || !date) {
                result = await connection.execute(`
@@ -448,6 +449,7 @@ async function getIssues(req, res) {
             res.json({queryResult: result});
       });
    } catch (e) {
+      console.log(e);
       res.status(400).send(e.error);
    }
 }
