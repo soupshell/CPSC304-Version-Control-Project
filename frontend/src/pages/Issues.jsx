@@ -73,7 +73,8 @@ function Issues(props) {
           </h2>
 
           <form onSubmit={(e) => {e.preventDefault(); 
-                                  fetchIssues(parameters);}}>
+                                  fetchIssues(parameters);
+                                  }}>
           <label for="isresolved">Is Resolved:</label>
 
           <select name="isresolved" id="resolvedOptions" 

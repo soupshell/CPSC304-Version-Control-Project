@@ -15,6 +15,7 @@ function IssuePage(props) {
     const [repoid, setRepoid] = useState(0);
     const [comments, setComments] = useState([]);
 
+   
 
     //we get sample issue from db, and then query comments to get chronological 
     //comments relating to this issue
@@ -130,12 +131,24 @@ function IssuePage(props) {
           <div >
             <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}>Go back to issues</Link>
             <button onClick={async (e) => { 
+              e.preventDefault();
               const res = await setResolved(new Date().toLocaleDateString, issueid);
               await fetchIssue();
+              if(res === false){
+                alert("Issue has been resolved");
+             } else {
+                alert("Coudlnt set as resolved");
+             }
             }}>Mark Resolved</button>
 
-            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`} onClick={() => {
-              deleteIssue(issueid);
+            <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`} onClick={async (e) => {
+              e.preventDefault();
+              const res = await deleteIssue(issueid);
+              if(res === false){
+               alert("Issue has been deleted");
+            } else {
+               alert("Coudlnt delete issue");
+            }
             }}>
                 Delete this issue
             </Link>
@@ -172,10 +185,22 @@ function IssuePage(props) {
             <button onClick={async (e) => { 
               const res = await setResolved(null, issueid);
               await fetchIssue();
+              if(res === false){
+                alert("Issue has been resolved");
+             } else {
+                alert("Coudlnt set as resolved");
+             }
             }}>Mark Unresolved</button>
             <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues`}
-                onClick={() => {
-                    deleteIssue(issueid);}}>
+                onClick={async (e) => {
+                     e.preventDefault();
+                   const res = await deleteIssue(issueid);
+                   if(res === false){
+                    alert("Coudlnt delete issue");
+                 } else {
+                   alert("Issue has been deleted");
+                 }
+                 }}>
                Delete this issue
             </Link>
             <Link className='ctgrey-button' to={`/New`}>Add new comment</Link>
