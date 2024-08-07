@@ -1,5 +1,5 @@
 import RepoHeader from "../components/RepoHeader";
-import { useParams, Link, redirect } from "react-router-dom";
+import { useParams, Link} from "react-router-dom";
 import { getIssue, getComments, setResolved, deleteIssue} from "../controller/controller";
 import { useState } from 'react';
 import { useEffect } from 'react';
