@@ -530,6 +530,12 @@ async function deleteIssue(req, res) {
 
          const result = await connection.execute(`
             BEGIN
+               delete from comments 
+               where issueId = :issueid;
+
+               delete from IssuesAssignedTo
+               where issueId = :issueid;
+
                delete from Issues
                where id = :issueid;
                COMMIT;
@@ -608,7 +614,7 @@ async function getComment(req, res) {
             SELECT DISTINCT c.userid, c.message, u.username
             from Comments c, Users2 u
             where c.id = :commentid
-            and c.userid = u.userid;`, {commentid: commentid});
+            and c.userid = u.id`, {commentid: commentid});
 
          console.log(result);
          res.json({queryResult: result});
@@ -627,10 +633,12 @@ async function updateComment(req, res) {
       await oracle.withOracleDB(async (connection) => {
 
          const result = await connection.execute(`
-            UPDATE Comments
-            set message = :text
-            where c.id = :commentid;
-            COMMIT;`, {text: text, commentid: commentid});
+            BEGIN
+                UPDATE Comments
+                SET message = :text
+                WHERE id = :commentid;
+                COMMIT;
+            END;`, {text: text, commentid: commentid});
 
          console.log(result);
          res.json({queryResult: result});
