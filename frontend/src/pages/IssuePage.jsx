@@ -113,7 +113,7 @@ function IssuePage(props) {
         <div>{comment.username}</div>
         <div>{comment.timePosted}</div>
         <div>{comment.message}</div>
-        <Link className='ctgrey-button' to={`/${user}/${repo}/Issues/${issues}/${comment.id}`}>Edit this comment</Link>
+        <Link className='ctgrey-button' to={`/${User}/${Repo}/Issues/${Issues}/${comment.id}`}>Edit this comment</Link>
     </li>);
 
     if (issuedate == null) {
